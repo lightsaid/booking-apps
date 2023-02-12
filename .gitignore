@@ -1,3 +1,4 @@
+# Golang 后端忽略文件
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -13,3 +14,10 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+
+# docker 存储databas数据
+docker/database
+
+
+# 前端忽略文件
