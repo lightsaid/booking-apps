@@ -1,0 +1,1 @@
+DELETE from tb_roles WHERE code in ('ADMIN', 'CONSUMER');

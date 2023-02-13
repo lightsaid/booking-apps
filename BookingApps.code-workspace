@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "resource"
+		},
+		{
+			"path": "booking-sys"
 		}
 	]
 }
