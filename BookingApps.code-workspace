@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "booking-sys"
+		},
+		{
+			"path": "booking-gapi"
 		}
 	]
 }
