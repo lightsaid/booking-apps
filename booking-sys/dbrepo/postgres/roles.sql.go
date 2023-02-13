@@ -3,7 +3,7 @@
 //   sqlc v1.16.0
 // source: roles.sql
 
-package postgres
+package dbrepo
 
 import (
 	"context"

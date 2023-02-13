@@ -6,7 +6,7 @@ sql:
   strict_function_checks: true
   gen:
     go: 
-      package: "postgres"
+      package: "dbrepo"
       out: "./dbrepo/postgres"
       emit_db_tags: true
       emit_prepared_queries: true
