@@ -27,5 +27,9 @@ cd booking-apps
 go work init booking-sys booking-gapi
 
 # 如果后面添加其他模块，通过以下命令添加
+# 添加模块后，vscode可能识别不了，重启vscode即可
 go work use ./xxx
+
 ```
+
+

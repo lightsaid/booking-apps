@@ -1,0 +1,10 @@
+Database:
+  DBDriver: postgres
+  DBSource: postgresql://postgres:postgres_booking@localhost:5555/db_bookings?sslmode=disable
+Server:
+  Port: 5000
+JWT:
+  Secret: booking-apps#Author@lightsaid
+
+
+

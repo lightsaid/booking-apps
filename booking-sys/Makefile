@@ -20,3 +20,6 @@ migrate_force:
 ## sqlc: 使用 sqlc generate 生成代码
 sqlc:
 	sqlc generate
+
+run: 
+	go run ./cmd/api/*.go
