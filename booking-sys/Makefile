@@ -16,3 +16,7 @@ migrate_down:
 ## migrate_force: 版本回滚，例如： make migrate_force V=1
 migrate_force:
 	migrate -database ${DB_URL} -path ./dbrepo/migrations force $$V
+
+## sqlc: 使用 sqlc generate 生成代码
+sqlc:
+	sqlc generate
