@@ -9,12 +9,14 @@ import (
 )
 
 type Querier interface {
+	CreateRole(ctx context.Context, arg CreateRoleParams) (*TbRole, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (*TbUser, error)
 	DeleteUser(ctx context.Context, arg DeleteUserParams) (*TbUser, error)
 	GetRole(ctx context.Context, id int64) (*TbRole, error)
 	GetRoles(ctx context.Context, arg GetRolesParams) ([]*TbRole, error)
 	GetUser(ctx context.Context, id int64) (*TbUser, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]*TbUser, error)
+	UpdateRole(ctx context.Context, arg UpdateRoleParams) (*TbRole, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (*TbUser, error)
 }
 

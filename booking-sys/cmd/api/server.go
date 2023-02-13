@@ -11,17 +11,20 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	dbrepo "github.com/lightsaid/booking-sys/dbrepo/postgres"
 	"github.com/lightsaid/booking-sys/pkg/settings"
 )
 
 type Server struct {
 	config *settings.AppConfig
 	router *gin.Engine
+	store  dbrepo.Store
 }
 
-func NewServer(config *settings.AppConfig) *Server {
+func NewServer(config *settings.AppConfig, store dbrepo.Store) *Server {
 	server := &Server{
 		config: config,
+		store:  store,
 	}
 	server.initRouter()
 

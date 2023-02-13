@@ -24,6 +24,9 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.createRoleStmt, err = db.PrepareContext(ctx, CreateRole); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateRole: %w", err)
+	}
 	if q.createUserStmt, err = db.PrepareContext(ctx, CreateUser); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
 	}
@@ -42,6 +45,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.listUsersStmt, err = db.PrepareContext(ctx, ListUsers); err != nil {
 		return nil, fmt.Errorf("error preparing query ListUsers: %w", err)
 	}
+	if q.updateRoleStmt, err = db.PrepareContext(ctx, UpdateRole); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateRole: %w", err)
+	}
 	if q.updateUserStmt, err = db.PrepareContext(ctx, UpdateUser); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateUser: %w", err)
 	}
@@ -50,6 +56,11 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 
 func (q *Queries) Close() error {
 	var err error
+	if q.createRoleStmt != nil {
+		if cerr := q.createRoleStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createRoleStmt: %w", cerr)
+		}
+	}
 	if q.createUserStmt != nil {
 		if cerr := q.createUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createUserStmt: %w", cerr)
@@ -78,6 +89,11 @@ func (q *Queries) Close() error {
 	if q.listUsersStmt != nil {
 		if cerr := q.listUsersStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listUsersStmt: %w", cerr)
+		}
+	}
+	if q.updateRoleStmt != nil {
+		if cerr := q.updateRoleStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateRoleStmt: %w", cerr)
 		}
 	}
 	if q.updateUserStmt != nil {
@@ -124,12 +140,14 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 type Queries struct {
 	db             DBTX
 	tx             *sql.Tx
+	createRoleStmt *sql.Stmt
 	createUserStmt *sql.Stmt
 	deleteUserStmt *sql.Stmt
 	getRoleStmt    *sql.Stmt
 	getRolesStmt   *sql.Stmt
 	getUserStmt    *sql.Stmt
 	listUsersStmt  *sql.Stmt
+	updateRoleStmt *sql.Stmt
 	updateUserStmt *sql.Stmt
 }
 
@@ -137,12 +155,14 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
 		db:             tx,
 		tx:             tx,
+		createRoleStmt: q.createRoleStmt,
 		createUserStmt: q.createUserStmt,
 		deleteUserStmt: q.deleteUserStmt,
 		getRoleStmt:    q.getRoleStmt,
 		getRolesStmt:   q.getRolesStmt,
 		getUserStmt:    q.getUserStmt,
 		listUsersStmt:  q.listUsersStmt,
+		updateRoleStmt: q.updateRoleStmt,
 		updateUserStmt: q.updateUserStmt,
 	}
 }

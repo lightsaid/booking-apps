@@ -7,7 +7,34 @@ package dbrepo
 
 import (
 	"context"
+	"database/sql"
 )
+
+const CreateRole = `-- name: CreateRole :one
+INSERT INTO tb_roles (name, code, description)
+VALUES ($1, $2, $3) RETURNING id, name, code, description, created_at, updated_at, deleted_at
+`
+
+type CreateRoleParams struct {
+	Name        string         `db:"name" json:"name"`
+	Code        string         `db:"code" json:"code"`
+	Description sql.NullString `db:"description" json:"description"`
+}
+
+func (q *Queries) CreateRole(ctx context.Context, arg CreateRoleParams) (*TbRole, error) {
+	row := q.queryRow(ctx, q.createRoleStmt, CreateRole, arg.Name, arg.Code, arg.Description)
+	var i TbRole
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Code,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return &i, err
+}
 
 const GetRole = `-- name: GetRole :one
 SELECT id, name, code, description, created_at, updated_at, deleted_at FROM tb_roles WHERE id = $1 AND deleted_at IS NULL LIMIT 1
@@ -66,4 +93,34 @@ func (q *Queries) GetRoles(ctx context.Context, arg GetRolesParams) ([]*TbRole, 
 		return nil, err
 	}
 	return items, nil
+}
+
+const UpdateRole = `-- name: UpdateRole :one
+UPDATE tb_roles 
+SET
+    name = $2,
+    description = $3
+WHERE id = $1 AND deleted_at IS NULL
+RETURNING id, name, code, description, created_at, updated_at, deleted_at
+`
+
+type UpdateRoleParams struct {
+	ID          int64          `db:"id" json:"id"`
+	Name        string         `db:"name" json:"name"`
+	Description sql.NullString `db:"description" json:"description"`
+}
+
+func (q *Queries) UpdateRole(ctx context.Context, arg UpdateRoleParams) (*TbRole, error) {
+	row := q.queryRow(ctx, q.updateRoleStmt, UpdateRole, arg.ID, arg.Name, arg.Description)
+	var i TbRole
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Code,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return &i, err
 }
