@@ -4,25 +4,23 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
 	"strconv"
+	"toolkit/errs"
 
 	"github.com/gin-gonic/gin"
 	dbrepo "github.com/lightsaid/booking-sys/dbrepo/postgres"
+	"github.com/lightsaid/booking-sys/pkg/app"
 )
 
 func (s *Server) getListRoles(c *gin.Context) {
 	roles, err := s.store.GetRoles(context.TODO(), dbrepo.GetRolesParams{Limit: 10, Offset: 0})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		// TODO: handler postgreSQL error
+		e := errs.InvalidParams.AsException(err)
+		app.ToErrorResponse(c, e)
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"data": roles,
-	})
+	app.ToResponse(c, roles)
 }
 
 func (s *Server) getRoleById(c *gin.Context) {
@@ -30,20 +28,16 @@ func (s *Server) getRoleById(c *gin.Context) {
 	id, err := strconv.Atoi(str)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "id invalid",
-		})
+		e := errs.InvalidParams.AsException(err, "id invalid")
+		app.ToErrorResponse(c, e)
 		return
 	}
 	role, err := s.store.GetRole(context.TODO(), int64(id))
 	if err != nil {
 		fmt.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		e := errs.ServerError.AsException(err)
+		app.ToErrorResponse(c, e)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"data": role,
-	})
+	app.ToResponse(c, role)
 }
