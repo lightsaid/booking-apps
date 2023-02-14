@@ -32,6 +32,14 @@ func NewServer(config *settings.AppConfig, store dbrepo.Store) *Server {
 }
 
 func (server *Server) Start() {
+	// TODO: 设置日志
+
+	// 设置 validator 引擎
+	err := setupValidatorEngine()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	s := http.Server{
 		Addr:           fmt.Sprintf("0.0.0.0:%d", server.config.Server.Port),
 		Handler:        server.router,
@@ -40,49 +48,6 @@ func (server *Server) Start() {
 		WriteTimeout:   30 * time.Second,
 		MaxHeaderBytes: 4 << 20, // 4M
 	}
-
-	// quitErr := make(chan error)
-
-	// go func() {
-	// 	quit := make(chan os.Signal, 1)
-	// 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-
-	// 	// 阻塞，等待信息号
-	// 	sInfo := <-quit
-	// 	log.Println("Stop server signal: ", sInfo.String())
-
-	// 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	// 	defer cancel()
-
-	// 	log.Println("Stopping server...")
-
-	// 	err := s.Shutdown(ctx)
-	// 	if err != nil {
-	// 		fmt.Println("ssssss")
-	// 		quitErr <- err
-	// 	}
-	// 	fmt.Println("bbbbbbb")
-	// 	quitErr <- nil
-	// }()
-
-	// log.Println("Starting server on ", s.Addr)
-	// err := s.ListenAndServe()
-	// if err != nil {
-	// 	fmt.Println("ccccc")
-	// 	return err
-	// }
-
-	// // 阻塞，等待 quitErr channel 错误信号
-	// err = <-quitErr
-	// fmt.Println("接受quitErr: ", err)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// // 成功关机
-	// log.Println("Stopped server.")
-
-	// return nil
 
 	go func() {
 		log.Println("Starting server on ", s.Addr)

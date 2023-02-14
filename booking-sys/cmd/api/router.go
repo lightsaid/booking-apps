@@ -18,9 +18,9 @@ func (server *Server) initRouter() {
 
 	userRouter := router.Group("/v1/users")
 	{
-		userRouter.POST("/", server.createUser)
+		userRouter.POST("", server.createUser)
 		userRouter.PUT("/:id", server.updateUser)
-		userRouter.GET("/", server.getListUsers)
+		userRouter.GET("", server.getListUsers)
 		userRouter.GET("/:id", server.getUserById)
 	}
 
