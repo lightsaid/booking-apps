@@ -49,6 +49,8 @@ func (ms *mockSMS) Status() statusType {
 
 // SetStatus 设置状态
 func (ms *mockSMS) SetStatus(phone string, status statusType) {
+	mu.Lock()
+	defer mu.Unlock()
 	ss, ok := mockMaps[phone]
 	if ok {
 		ss.status = status
@@ -65,7 +67,7 @@ func NewMockSMS(phone string) *mockSMS {
 
 	mu.Lock()
 	mockMaps[phone] = &ss
-	mu.RUnlock()
+	mu.Unlock()
 
 	go func() {
 		// 5 分钟后过期
@@ -80,4 +82,10 @@ func NewMockSMS(phone string) *mockSMS {
 	}()
 
 	return &ss
+}
+
+// GetMockSMS 获取一个验证码
+func GetMockSMS(phone string) (sms *mockSMS, ok bool) {
+	sms, ok = mockMaps[phone]
+	return
 }

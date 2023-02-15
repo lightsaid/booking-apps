@@ -19,10 +19,10 @@ func (s *Server) initRouter() {
 
 	if s.config.Server.RunMode == "release" {
 		// TODO: 真实发送短信验证码
-		router.GET("/v1/sms")
+		router.POST("/v1/sms")
 	} else {
 		// 模拟发送短信验证码
-		router.GET("/v1/sms", s.mockSendSMS)
+		router.POST("/v1/sms", s.mockSendSMS)
 	}
 
 	authRouter := router.Group("/v1/auth")
