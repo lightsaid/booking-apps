@@ -11,7 +11,9 @@ type Database struct {
 	DBSource string `mapstructure:"DBSource"`
 }
 type Server struct {
-	Port int
+	RunMode   string
+	Port      int
+	LogOutput string
 }
 type JWT struct {
 	Secret string

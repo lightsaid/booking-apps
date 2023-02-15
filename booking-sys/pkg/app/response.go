@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"toolkit/errs"
+	"toolkit/logz"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +21,9 @@ func ToResponse(c *gin.Context, data interface{}) {
 // ToErrorResponse 请求异常的响应处理
 func ToErrorResponse(c *gin.Context, err *errs.AppError) {
 	// TODO: logger
+	logz.Zap.Info(c.Request.RequestURI)
 	log.Printf("metod:%s, url: %s, error: %v", c.Request.Method, c.Request.URL, err)
+
 	if err == nil {
 		err = errs.ServerError
 	}

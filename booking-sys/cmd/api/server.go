@@ -9,10 +9,12 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+	"toolkit/logz"
 
 	"github.com/gin-gonic/gin"
 	dbrepo "github.com/lightsaid/booking-sys/dbrepo/postgres"
 	"github.com/lightsaid/booking-sys/pkg/settings"
+	"go.uber.org/zap/zapcore"
 )
 
 type Server struct {
@@ -32,14 +34,22 @@ func NewServer(config *settings.AppConfig, store dbrepo.Store) *Server {
 }
 
 func (server *Server) Start() {
-	// TODO: 设置日志
+	// 1. 设置日志
+	var logLevel zapcore.Level
+	if server.config.Server.RunMode == "release" {
+		logLevel = zapcore.InfoLevel
+	} else {
+		logLevel = zapcore.DebugLevel
+	}
+	logz.SettingGlobalLogger(server.config.LogOutput, logLevel)
 
-	// 设置 validator 引擎
+	// 2. 设置 validator 引擎
 	err := setupValidatorEngine()
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// 3. 创建 HTTP Server
 	s := http.Server{
 		Addr:           fmt.Sprintf("0.0.0.0:%d", server.config.Server.Port),
 		Handler:        server.router,
@@ -49,6 +59,7 @@ func (server *Server) Start() {
 		MaxHeaderBytes: 4 << 20, // 4M
 	}
 
+	// 启动服务监听
 	go func() {
 		log.Println("Starting server on ", s.Addr)
 		if err := s.ListenAndServe(); err != nil {
@@ -56,6 +67,7 @@ func (server *Server) Start() {
 		}
 	}()
 
+	// 优雅关机
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
