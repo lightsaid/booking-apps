@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"net/http"
+	"toolkit/dberr"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lightsaid/booking-sys/pkg/app"
 )
 
 func (s *Server) initRouter() {
@@ -46,7 +48,8 @@ func (s *Server) initRouter() {
 		roleRouter.POST("/tx", func(c *gin.Context) {
 			id, err := s.store.TestRoleTx(context.TODO())
 			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				e, _ := dberr.HandlePGError(err)
+				app.ToErrorResponse(c, e)
 				return
 			}
 			c.JSON(http.StatusOK, gin.H{"id": id})

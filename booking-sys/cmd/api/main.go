@@ -17,10 +17,7 @@ func main() {
 	configs.NewConfig("config.yaml", &config, "./configs")
 
 	// 2. 链接 PostgreSQL
-	db, err := sql.Open(config.DBDriver, config.DBSource)
-	if err != nil {
-		log.Fatal(err)
-	}
+	db := connectPostgreSQL(&config)
 	defer db.Close()
 
 	// 3. 实例化 PostgreSQL 操作对象
@@ -31,4 +28,18 @@ func main() {
 
 	// 5. 启动服务
 	server.Start()
+}
+
+func connectPostgreSQL(config *settings.AppConfig) *sql.DB {
+	db, err := sql.Open(config.DBDriver, config.DBSource)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return db
 }
