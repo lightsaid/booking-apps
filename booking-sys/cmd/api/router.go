@@ -12,6 +12,19 @@ func (s *Server) initRouter() {
 
 	router.Use(s.setTranslations())
 
+	// 服务检查
+	router.GET("/v1/ping", func(c *gin.Context) {
+		c.String(http.StatusOK, "Pong")
+	})
+
+	if s.config.Server.RunMode == "release" {
+		// TODO: 真实发送短信验证码
+		router.GET("/v1/sms")
+	} else {
+		// 模拟发送短信验证码
+		router.GET("/v1/sms", s.mockSendSMS)
+	}
+
 	authRouter := router.Group("/v1/auth")
 	{
 		authRouter.POST("/login", s.loginUser)
