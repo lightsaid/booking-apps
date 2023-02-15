@@ -7,29 +7,31 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (server *Server) initRouter() {
+func (s *Server) initRouter() {
 	router := gin.Default()
+
+	router.Use(s.setTranslations())
 
 	authRouter := router.Group("/v1/auth")
 	{
-		authRouter.POST("/login", server.loginUser)
-		authRouter.POST("/refresh", server.refreshToken)
+		authRouter.POST("/login", s.loginUser)
+		authRouter.POST("/refresh", s.refreshToken)
 	}
 
 	userRouter := router.Group("/v1/users")
 	{
-		userRouter.POST("", server.createUser)
-		userRouter.PUT("/:id", server.updateUser)
-		userRouter.GET("", server.getListUsers)
-		userRouter.GET("/:id", server.getUserById)
+		userRouter.POST("", s.createUser)
+		userRouter.PUT("/:id", s.updateUser)
+		userRouter.GET("", s.getListUsers)
+		userRouter.GET("/:id", s.getUserById)
 	}
 
 	roleRouter := router.Group("/v1/roles")
 	{
-		roleRouter.GET("", server.getListRoles)
-		roleRouter.GET("/:id", server.getRoleById)
+		roleRouter.GET("", s.getListRoles)
+		roleRouter.GET("/:id", s.getRoleById)
 		roleRouter.POST("/tx", func(c *gin.Context) {
-			id, err := server.store.TestRoleTx(context.TODO())
+			id, err := s.store.TestRoleTx(context.TODO())
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
@@ -38,5 +40,5 @@ func (server *Server) initRouter() {
 		})
 	}
 
-	server.router = router
+	s.router = router
 }
