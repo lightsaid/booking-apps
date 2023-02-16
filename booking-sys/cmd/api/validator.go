@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 	"regexp"
 	"strings"
@@ -29,9 +28,6 @@ func setupValidatorEngine() error {
 
 		// 注册一个获取字段tag的自定义方法, 分别获取 json tag 和 zh tag, 提供给错误消息使用
 		v.RegisterTagNameFunc(func(fl reflect.StructField) string {
-			fmt.Println("fl json : ", fl.Tag.Get("json"))
-			fmt.Println("fl zh: ", fl.Tag.Get("zh"))
-
 			name := fl.Tag.Get("zh")
 			if len(strings.TrimSpace(name)) == 0 {
 				name = fl.Tag.Get("json")

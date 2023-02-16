@@ -33,22 +33,22 @@ func (s *Server) initRouter() {
 		authRouter.POST("/refresh", s.refreshToken)
 	}
 
-	userRouter := router.Group("/v1/users")
+	userRouter := router.Group("/v1/users").Use(s.authentication())
 	{
 		userRouter.POST("", s.createUser)
 		userRouter.PUT("/:id", s.updateUser)
-		userRouter.GET("", s.getListUsers)
+		userRouter.GET("", s.getListUsers) // /v1/users?page_num=1&page_size=10
 		userRouter.GET("/:id", s.getUserById)
 	}
 
-	roleRouter := router.Group("/v1/roles")
+	roleRouter := router.Group("/v1/roles").Use(s.authentication())
 	{
 		roleRouter.GET("", s.getListRoles)
 		roleRouter.GET("/:id", s.getRoleById)
 		roleRouter.POST("/tx", func(c *gin.Context) {
 			id, err := s.store.TestRoleTx(context.TODO())
 			if err != nil {
-				e, _ := dberr.HandlePGError(err)
+				e, _ := dberr.HandleDBError(err)
 				app.ToErrorResponse(c, e)
 				return
 			}

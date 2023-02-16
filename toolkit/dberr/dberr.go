@@ -1,6 +1,7 @@
 package dberr
 
 import (
+	"database/sql"
 	"log"
 	"net"
 	"strings"
@@ -11,13 +12,18 @@ import (
 
 // 该包是检查错误是否 PostgreSQL 错误，并返回 errs 包错误结构，同时返回是否要发邮件通知开发者
 
-// HandlePGError 处理 PostgreSQL 错误，其中 sendEmail 提示是否要发邮件通知开发者
-func HandlePGError(err error) (apperr *errs.AppError, sendEmail bool) {
+// HandleDBError 处理 PostgreSQL 错误，其中 sendEmail 提示是否要发邮件通知开发者
+func HandleDBError(err error) (apperr *errs.AppError, sendEmail bool) {
 	if err == nil {
 		return errs.Success, false
 	}
 
+	if err == sql.ErrNoRows {
+		return errs.NotFound, false
+	}
+
 	pgerr, ok := err.(*pq.Error)
+	log.Println("pgerr: ", ok)
 	if ok {
 		log.Println("pgerr: ", pgerr.Code, " | ", pgerr.Message)
 		// TODO: 后续遇到待补充

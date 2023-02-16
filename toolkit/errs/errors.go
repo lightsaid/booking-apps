@@ -102,12 +102,12 @@ func (e *AppError) StatusCode() int {
 		return http.StatusBadRequest
 	case NotFound.Code():
 		return http.StatusNotFound
-	case NeedToLogin.Code():
-		fallthrough
 	case NotForbidden.Code():
 		return http.StatusForbidden
 	case RequestTimeout.Code():
 		return http.StatusRequestTimeout
+	case NeedToLogin.Code():
+		fallthrough
 	case UnauthorizedTokenError.Code():
 		fallthrough
 	case UnauthorizedTokenTimeout.Code():

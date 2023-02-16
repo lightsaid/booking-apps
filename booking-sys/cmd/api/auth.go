@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"time"
 	"toolkit/errs"
 	"toolkit/jwtutil"
@@ -52,6 +51,18 @@ type loginUserResponse struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
+// 公共创建token方法，提供给登录和刷新token
+func (s *Server) createToken(uid int64, duration time.Duration) (string, error) {
+	claims := jwt.RegisteredClaims{
+		Issuer:    "booking sys",
+		Subject:   "Booking Apps",
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(duration)),
+	}
+
+	// 生成 token
+	return s.jwt.GenToken(jwtutil.NewJWTPayload(uid, claims))
+}
+
 func (s *Server) loginUser(c *gin.Context) {
 	var req loginUserRequest
 	if ok := app.BindRequest(c, &req); !ok {
@@ -76,22 +87,15 @@ func (s *Server) loginUser(c *gin.Context) {
 		}
 	}
 
-	claims := jwt.RegisteredClaims{
-		Issuer:    "booking sys",
-		Subject:   "Booking Apps",
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(s.config.JWT.AccessTokenDuration)),
-	}
-
 	// 生成 access token
-	accessToken, err := s.jwt.GenToken(jwtutil.NewJWTPayload(user.ID, claims))
+	accessToken, err := s.createToken(user.ID, s.config.JWT.AccessTokenDuration)
 	if err != nil {
 		app.ToErrorResponse(c, errs.ServerError.AsException(err))
 		return
 	}
 
 	// 生成 refresh token
-	claims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(s.config.RefreshTokenDuration))
-	refreshToken, err := s.jwt.GenToken(jwtutil.NewJWTPayload(user.ID, claims))
+	refreshToken, err := s.createToken(user.ID, s.config.JWT.RefreshTokenDuration)
 	if err != nil {
 		app.ToErrorResponse(c, errs.ServerError.AsException(err))
 		return
@@ -109,6 +113,44 @@ func (s *Server) loginUser(c *gin.Context) {
 	app.ToResponse(c, response)
 }
 
+type refreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+}
+
+type refreshTokenResponse struct {
+	AccessToken string `json:"access_token"`
+}
+
 func (s *Server) refreshToken(c *gin.Context) {
-	c.String(http.StatusOK, "Refresh Token.")
+	var req refreshTokenRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		app.ToErrorResponse(c, errs.InvalidParams.AsException(err))
+		return
+	}
+
+	payload, err := s.jwt.ParseToken(req.RefreshToken)
+	if err != nil {
+		app.ToErrorResponse(c, errs.UnauthorizedTokenError.AsException(err, "refresh_token 无效"))
+		return
+	}
+
+	// 查询用户是否还存在
+	_, err = s.store.GetUser(c, payload.UID)
+	if err != nil {
+		app.ToErrorResponse(c, errs.ServerError.AsException(err, "刷新 token 失败"))
+		return
+	}
+
+	// 创建 token
+	accessToken, err := s.createToken(payload.UID, s.config.JWT.AccessTokenDuration)
+	if err != nil {
+		app.ToErrorResponse(c, errs.ServerError.AsException(err))
+		return
+	}
+
+	res := refreshTokenResponse{
+		AccessToken: accessToken,
+	}
+
+	app.ToResponse(c, res)
 }

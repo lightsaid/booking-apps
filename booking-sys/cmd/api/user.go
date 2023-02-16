@@ -2,8 +2,12 @@ package main
 
 import (
 	"net/http"
+	"strconv"
+	"toolkit/dberr"
+	"toolkit/errs"
 
 	"github.com/gin-gonic/gin"
+	dbrepo "github.com/lightsaid/booking-sys/dbrepo/postgres"
 	"github.com/lightsaid/booking-sys/pkg/app"
 )
 
@@ -19,17 +23,9 @@ type createUserRequest struct {
 func (s *Server) createUser(c *gin.Context) {
 	// s.store.CreateUser()
 	var req createUserRequest
-
-	// if err := c.ShouldBind(&req); err != nil {
-	// 	e := errs.InvalidParams.AsException(err, err.Error())
-	// 	app.ToErrorResponse(c, e)
-	// 	return
-	// }
-
 	if ok := app.BindRequest(c, &req); !ok {
 		return
 	}
-
 	c.String(http.StatusOK, "Create User.")
 
 }
@@ -39,9 +35,42 @@ func (s *Server) updateUser(c *gin.Context) {
 }
 
 func (s *Server) getListUsers(c *gin.Context) {
-	c.String(http.StatusOK, "List User.")
+	var req PagingRequrest
+	if ok := app.BindRequest(c, &req); !ok {
+		return
+	}
+
+	list, err := s.store.ListUsers(c, dbrepo.ListUsersParams{Limit: req.PageSize, Offset: (req.PageNum - 1) * req.PageSize})
+	if err != nil {
+		app.ToErrorResponse(c, errs.ServerError.AsException(err))
+		return
+	}
+
+	var users []*userResponse
+	for _, l := range list {
+		var res userResponse
+		res.toUserResponse(l)
+		users = append(users, &res)
+	}
+	app.ToResponse(c, users)
 }
 
 func (s *Server) getUserById(c *gin.Context) {
-	c.String(http.StatusOK, "Get One User.")
+	str := c.Param("id")
+	id, err := strconv.Atoi(str)
+	if err != nil {
+		app.ToErrorResponse(c, errs.InvalidParams.AsException(err))
+		return
+	}
+
+	user, err := s.store.GetUser(c, int64(id))
+	if err != nil {
+		e, _ := dberr.HandleDBError(err)
+		app.ToErrorResponse(c, e)
+		return
+	}
+
+	var res userResponse
+	res.toUserResponse(user)
+	app.ToResponse(c, res)
 }

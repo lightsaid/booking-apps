@@ -22,7 +22,7 @@ func ToResponse(c *gin.Context, data interface{}) {
 func ToErrorResponse(c *gin.Context, err *errs.AppError) {
 	// TODO: logger
 	logz.Zap.Info(c.Request.RequestURI)
-	log.Printf("metod:%s, url: %s, error: %v", c.Request.Method, c.Request.URL, err)
+	log.Printf("metod:%s, url: %s, error: %v\n", c.Request.Method, c.Request.URL, err)
 
 	if err == nil {
 		err = errs.ServerError

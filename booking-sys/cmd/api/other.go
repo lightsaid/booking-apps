@@ -32,3 +32,10 @@ func (s *Server) mockSendSMS(c *gin.Context) {
 
 	app.ToResponse(c, sms.Code())
 }
+
+type PagingRequrest struct {
+	// 每页多少条数据
+	PageSize int32 `form:"page_size" binding:"required,min=10,max=100"`
+	// 第几页
+	PageNum int32 `form:"page_num" binding:"required,min=1"`
+}
