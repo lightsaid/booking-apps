@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+	"toolkit/jwtutil"
 	"toolkit/logz"
 
 	"github.com/gin-gonic/gin"
@@ -21,6 +22,7 @@ type Server struct {
 	config *settings.AppConfig
 	router *gin.Engine
 	store  dbrepo.Store
+	jwt    *jwtutil.Maker
 }
 
 func NewServer(config *settings.AppConfig, store dbrepo.Store) *Server {
@@ -43,13 +45,20 @@ func (server *Server) Start() {
 	}
 	logz.SettingGlobalLogger(server.config.LogOutput, logLevel)
 
-	// 2. 设置 validator 引擎
-	err := setupValidatorEngine()
+	// 2. 实例化 jwtutil 对象
+	jwt, err := jwtutil.NewMaker(server.config.JWT.Secret)
+	if err != nil {
+		log.Fatal(err)
+	}
+	server.jwt = jwt
+
+	// 3. 设置 validator 引擎
+	err = setupValidatorEngine()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// 3. 创建 HTTP Server
+	// 4. 创建 HTTP Server
 	s := http.Server{
 		Addr:           fmt.Sprintf("0.0.0.0:%d", server.config.Server.Port),
 		Handler:        server.router,

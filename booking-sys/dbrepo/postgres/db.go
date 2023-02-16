@@ -42,6 +42,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getUserStmt, err = db.PrepareContext(ctx, GetUser); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUser: %w", err)
 	}
+	if q.getUserByPhoneStmt, err = db.PrepareContext(ctx, GetUserByPhone); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserByPhone: %w", err)
+	}
 	if q.listUsersStmt, err = db.PrepareContext(ctx, ListUsers); err != nil {
 		return nil, fmt.Errorf("error preparing query ListUsers: %w", err)
 	}
@@ -84,6 +87,11 @@ func (q *Queries) Close() error {
 	if q.getUserStmt != nil {
 		if cerr := q.getUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getUserStmt: %w", cerr)
+		}
+	}
+	if q.getUserByPhoneStmt != nil {
+		if cerr := q.getUserByPhoneStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserByPhoneStmt: %w", cerr)
 		}
 	}
 	if q.listUsersStmt != nil {
@@ -138,31 +146,33 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db             DBTX
-	tx             *sql.Tx
-	createRoleStmt *sql.Stmt
-	createUserStmt *sql.Stmt
-	deleteUserStmt *sql.Stmt
-	getRoleStmt    *sql.Stmt
-	getRolesStmt   *sql.Stmt
-	getUserStmt    *sql.Stmt
-	listUsersStmt  *sql.Stmt
-	updateRoleStmt *sql.Stmt
-	updateUserStmt *sql.Stmt
+	db                 DBTX
+	tx                 *sql.Tx
+	createRoleStmt     *sql.Stmt
+	createUserStmt     *sql.Stmt
+	deleteUserStmt     *sql.Stmt
+	getRoleStmt        *sql.Stmt
+	getRolesStmt       *sql.Stmt
+	getUserStmt        *sql.Stmt
+	getUserByPhoneStmt *sql.Stmt
+	listUsersStmt      *sql.Stmt
+	updateRoleStmt     *sql.Stmt
+	updateUserStmt     *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:             tx,
-		tx:             tx,
-		createRoleStmt: q.createRoleStmt,
-		createUserStmt: q.createUserStmt,
-		deleteUserStmt: q.deleteUserStmt,
-		getRoleStmt:    q.getRoleStmt,
-		getRolesStmt:   q.getRolesStmt,
-		getUserStmt:    q.getUserStmt,
-		listUsersStmt:  q.listUsersStmt,
-		updateRoleStmt: q.updateRoleStmt,
-		updateUserStmt: q.updateUserStmt,
+		db:                 tx,
+		tx:                 tx,
+		createRoleStmt:     q.createRoleStmt,
+		createUserStmt:     q.createUserStmt,
+		deleteUserStmt:     q.deleteUserStmt,
+		getRoleStmt:        q.getRoleStmt,
+		getRolesStmt:       q.getRolesStmt,
+		getUserStmt:        q.getUserStmt,
+		getUserByPhoneStmt: q.getUserByPhoneStmt,
+		listUsersStmt:      q.listUsersStmt,
+		updateRoleStmt:     q.updateRoleStmt,
+		updateUserStmt:     q.updateUserStmt,
 	}
 }

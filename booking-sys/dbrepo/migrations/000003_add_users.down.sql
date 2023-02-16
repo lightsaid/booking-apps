@@ -1,0 +1,1 @@
+DELETE FROM tb_users WHERE phone_number IN('18765432101', '18765432102');

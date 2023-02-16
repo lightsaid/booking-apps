@@ -114,6 +114,29 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (*TbUser, error) {
 	return &i, err
 }
 
+const GetUserByPhone = `-- name: GetUserByPhone :one
+SELECT id, role_id, phone_number, password, name, avatar, openid, unionid, created_at, updated_at, deleted_at FROM tb_users WHERE phone_number = $1 LIMIT 1
+`
+
+func (q *Queries) GetUserByPhone(ctx context.Context, phoneNumber string) (*TbUser, error) {
+	row := q.queryRow(ctx, q.getUserByPhoneStmt, GetUserByPhone, phoneNumber)
+	var i TbUser
+	err := row.Scan(
+		&i.ID,
+		&i.RoleID,
+		&i.PhoneNumber,
+		&i.Password,
+		&i.Name,
+		&i.Avatar,
+		&i.Openid,
+		&i.Unionid,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return &i, err
+}
+
 const ListUsers = `-- name: ListUsers :many
 SELECT id, role_id, phone_number, password, name, avatar, openid, unionid, created_at, updated_at, deleted_at FROM tb_users WHERE deleted_at IS NULL ORDER BY id LIMIT $1 OFFSET $2
 `

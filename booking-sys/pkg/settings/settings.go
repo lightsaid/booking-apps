@@ -1,5 +1,7 @@
 package settings
 
+import "time"
+
 type AppConfig struct {
 	Database
 	Server
@@ -16,5 +18,7 @@ type Server struct {
 	LogOutput string
 }
 type JWT struct {
-	Secret string
+	Secret               string
+	AccessTokenDuration  time.Duration
+	RefreshTokenDuration time.Duration
 }

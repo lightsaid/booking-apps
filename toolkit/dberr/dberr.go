@@ -1,6 +1,7 @@
 package dberr
 
 import (
+	"log"
 	"net"
 	"strings"
 	"toolkit/errs"
@@ -18,6 +19,7 @@ func HandlePGError(err error) (apperr *errs.AppError, sendEmail bool) {
 
 	pgerr, ok := err.(*pq.Error)
 	if ok {
+		log.Println("pgerr: ", pgerr.Code, " | ", pgerr.Message)
 		// TODO: 后续遇到待补充
 		switch pgerr.Code {
 		case "23505":

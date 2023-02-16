@@ -15,6 +15,7 @@ type Querier interface {
 	GetRole(ctx context.Context, id int64) (*TbRole, error)
 	GetRoles(ctx context.Context, arg GetRolesParams) ([]*TbRole, error)
 	GetUser(ctx context.Context, id int64) (*TbUser, error)
+	GetUserByPhone(ctx context.Context, phoneNumber string) (*TbUser, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]*TbUser, error)
 	UpdateRole(ctx context.Context, arg UpdateRoleParams) (*TbRole, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (*TbUser, error)
