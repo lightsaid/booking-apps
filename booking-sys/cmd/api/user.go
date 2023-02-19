@@ -35,7 +35,7 @@ func (s *Server) updateUser(c *gin.Context) {
 }
 
 func (s *Server) getListUsers(c *gin.Context) {
-	var req PagingRequrest
+	var req pagingRequrest
 	if ok := app.BindRequest(c, &req); !ok {
 		return
 	}
