@@ -24,14 +24,65 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.createHallStmt, err = db.PrepareContext(ctx, CreateHall); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateHall: %w", err)
+	}
+	if q.createMovieStmt, err = db.PrepareContext(ctx, CreateMovie); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateMovie: %w", err)
+	}
+	if q.createPaymentStmt, err = db.PrepareContext(ctx, CreatePayment); err != nil {
+		return nil, fmt.Errorf("error preparing query CreatePayment: %w", err)
+	}
 	if q.createRoleStmt, err = db.PrepareContext(ctx, CreateRole); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateRole: %w", err)
+	}
+	if q.createSeatStmt, err = db.PrepareContext(ctx, CreateSeat); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateSeat: %w", err)
+	}
+	if q.createShowtimeStmt, err = db.PrepareContext(ctx, CreateShowtime); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateShowtime: %w", err)
+	}
+	if q.createTheaterStmt, err = db.PrepareContext(ctx, CreateTheater); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateTheater: %w", err)
+	}
+	if q.createTicketStmt, err = db.PrepareContext(ctx, CreateTicket); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateTicket: %w", err)
 	}
 	if q.createUserStmt, err = db.PrepareContext(ctx, CreateUser); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
 	}
+	if q.deleteHallStmt, err = db.PrepareContext(ctx, DeleteHall); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteHall: %w", err)
+	}
+	if q.deleteMovieStmt, err = db.PrepareContext(ctx, DeleteMovie); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteMovie: %w", err)
+	}
+	if q.deletePaymentStmt, err = db.PrepareContext(ctx, DeletePayment); err != nil {
+		return nil, fmt.Errorf("error preparing query DeletePayment: %w", err)
+	}
+	if q.deleteSeatStmt, err = db.PrepareContext(ctx, DeleteSeat); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteSeat: %w", err)
+	}
+	if q.deleteShowtimeStmt, err = db.PrepareContext(ctx, DeleteShowtime); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteShowtime: %w", err)
+	}
+	if q.deleteTheaterStmt, err = db.PrepareContext(ctx, DeleteTheater); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteTheater: %w", err)
+	}
+	if q.deleteTicketStmt, err = db.PrepareContext(ctx, DeleteTicket); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteTicket: %w", err)
+	}
 	if q.deleteUserStmt, err = db.PrepareContext(ctx, DeleteUser); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteUser: %w", err)
+	}
+	if q.getHallStmt, err = db.PrepareContext(ctx, GetHall); err != nil {
+		return nil, fmt.Errorf("error preparing query GetHall: %w", err)
+	}
+	if q.getMovieStmt, err = db.PrepareContext(ctx, GetMovie); err != nil {
+		return nil, fmt.Errorf("error preparing query GetMovie: %w", err)
+	}
+	if q.getPaymentStmt, err = db.PrepareContext(ctx, GetPayment); err != nil {
+		return nil, fmt.Errorf("error preparing query GetPayment: %w", err)
 	}
 	if q.getRoleStmt, err = db.PrepareContext(ctx, GetRole); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRole: %w", err)
@@ -39,17 +90,71 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getRolesStmt, err = db.PrepareContext(ctx, GetRoles); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRoles: %w", err)
 	}
+	if q.getSeatStmt, err = db.PrepareContext(ctx, GetSeat); err != nil {
+		return nil, fmt.Errorf("error preparing query GetSeat: %w", err)
+	}
+	if q.getShowtimeStmt, err = db.PrepareContext(ctx, GetShowtime); err != nil {
+		return nil, fmt.Errorf("error preparing query GetShowtime: %w", err)
+	}
+	if q.getTheaterStmt, err = db.PrepareContext(ctx, GetTheater); err != nil {
+		return nil, fmt.Errorf("error preparing query GetTheater: %w", err)
+	}
+	if q.getTicketStmt, err = db.PrepareContext(ctx, GetTicket); err != nil {
+		return nil, fmt.Errorf("error preparing query GetTicket: %w", err)
+	}
 	if q.getUserStmt, err = db.PrepareContext(ctx, GetUser); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUser: %w", err)
 	}
 	if q.getUserByPhoneStmt, err = db.PrepareContext(ctx, GetUserByPhone); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUserByPhone: %w", err)
 	}
+	if q.listHallsStmt, err = db.PrepareContext(ctx, ListHalls); err != nil {
+		return nil, fmt.Errorf("error preparing query ListHalls: %w", err)
+	}
+	if q.listMoviesStmt, err = db.PrepareContext(ctx, ListMovies); err != nil {
+		return nil, fmt.Errorf("error preparing query ListMovies: %w", err)
+	}
+	if q.listPaymentsStmt, err = db.PrepareContext(ctx, ListPayments); err != nil {
+		return nil, fmt.Errorf("error preparing query ListPayments: %w", err)
+	}
+	if q.listSeatsStmt, err = db.PrepareContext(ctx, ListSeats); err != nil {
+		return nil, fmt.Errorf("error preparing query ListSeats: %w", err)
+	}
+	if q.listShowtimesStmt, err = db.PrepareContext(ctx, ListShowtimes); err != nil {
+		return nil, fmt.Errorf("error preparing query ListShowtimes: %w", err)
+	}
+	if q.listTheatersStmt, err = db.PrepareContext(ctx, ListTheaters); err != nil {
+		return nil, fmt.Errorf("error preparing query ListTheaters: %w", err)
+	}
+	if q.listTicketsStmt, err = db.PrepareContext(ctx, ListTickets); err != nil {
+		return nil, fmt.Errorf("error preparing query ListTickets: %w", err)
+	}
 	if q.listUsersStmt, err = db.PrepareContext(ctx, ListUsers); err != nil {
 		return nil, fmt.Errorf("error preparing query ListUsers: %w", err)
 	}
+	if q.updateHallStmt, err = db.PrepareContext(ctx, UpdateHall); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateHall: %w", err)
+	}
+	if q.updateMovieStmt, err = db.PrepareContext(ctx, UpdateMovie); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateMovie: %w", err)
+	}
+	if q.updatePaymentStmt, err = db.PrepareContext(ctx, UpdatePayment); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdatePayment: %w", err)
+	}
 	if q.updateRoleStmt, err = db.PrepareContext(ctx, UpdateRole); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateRole: %w", err)
+	}
+	if q.updateSeatStmt, err = db.PrepareContext(ctx, UpdateSeat); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateSeat: %w", err)
+	}
+	if q.updateShowtimeStmt, err = db.PrepareContext(ctx, UpdateShowtime); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateShowtime: %w", err)
+	}
+	if q.updateTheaterStmt, err = db.PrepareContext(ctx, UpdateTheater); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateTheater: %w", err)
+	}
+	if q.updateTicketStmt, err = db.PrepareContext(ctx, UpdateTicket); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateTicket: %w", err)
 	}
 	if q.updateUserStmt, err = db.PrepareContext(ctx, UpdateUser); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateUser: %w", err)
@@ -59,9 +164,44 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 
 func (q *Queries) Close() error {
 	var err error
+	if q.createHallStmt != nil {
+		if cerr := q.createHallStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createHallStmt: %w", cerr)
+		}
+	}
+	if q.createMovieStmt != nil {
+		if cerr := q.createMovieStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createMovieStmt: %w", cerr)
+		}
+	}
+	if q.createPaymentStmt != nil {
+		if cerr := q.createPaymentStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createPaymentStmt: %w", cerr)
+		}
+	}
 	if q.createRoleStmt != nil {
 		if cerr := q.createRoleStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createRoleStmt: %w", cerr)
+		}
+	}
+	if q.createSeatStmt != nil {
+		if cerr := q.createSeatStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createSeatStmt: %w", cerr)
+		}
+	}
+	if q.createShowtimeStmt != nil {
+		if cerr := q.createShowtimeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createShowtimeStmt: %w", cerr)
+		}
+	}
+	if q.createTheaterStmt != nil {
+		if cerr := q.createTheaterStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createTheaterStmt: %w", cerr)
+		}
+	}
+	if q.createTicketStmt != nil {
+		if cerr := q.createTicketStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createTicketStmt: %w", cerr)
 		}
 	}
 	if q.createUserStmt != nil {
@@ -69,9 +209,59 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing createUserStmt: %w", cerr)
 		}
 	}
+	if q.deleteHallStmt != nil {
+		if cerr := q.deleteHallStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteHallStmt: %w", cerr)
+		}
+	}
+	if q.deleteMovieStmt != nil {
+		if cerr := q.deleteMovieStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteMovieStmt: %w", cerr)
+		}
+	}
+	if q.deletePaymentStmt != nil {
+		if cerr := q.deletePaymentStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deletePaymentStmt: %w", cerr)
+		}
+	}
+	if q.deleteSeatStmt != nil {
+		if cerr := q.deleteSeatStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteSeatStmt: %w", cerr)
+		}
+	}
+	if q.deleteShowtimeStmt != nil {
+		if cerr := q.deleteShowtimeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteShowtimeStmt: %w", cerr)
+		}
+	}
+	if q.deleteTheaterStmt != nil {
+		if cerr := q.deleteTheaterStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteTheaterStmt: %w", cerr)
+		}
+	}
+	if q.deleteTicketStmt != nil {
+		if cerr := q.deleteTicketStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteTicketStmt: %w", cerr)
+		}
+	}
 	if q.deleteUserStmt != nil {
 		if cerr := q.deleteUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing deleteUserStmt: %w", cerr)
+		}
+	}
+	if q.getHallStmt != nil {
+		if cerr := q.getHallStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getHallStmt: %w", cerr)
+		}
+	}
+	if q.getMovieStmt != nil {
+		if cerr := q.getMovieStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getMovieStmt: %w", cerr)
+		}
+	}
+	if q.getPaymentStmt != nil {
+		if cerr := q.getPaymentStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getPaymentStmt: %w", cerr)
 		}
 	}
 	if q.getRoleStmt != nil {
@@ -84,6 +274,26 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getRolesStmt: %w", cerr)
 		}
 	}
+	if q.getSeatStmt != nil {
+		if cerr := q.getSeatStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getSeatStmt: %w", cerr)
+		}
+	}
+	if q.getShowtimeStmt != nil {
+		if cerr := q.getShowtimeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getShowtimeStmt: %w", cerr)
+		}
+	}
+	if q.getTheaterStmt != nil {
+		if cerr := q.getTheaterStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getTheaterStmt: %w", cerr)
+		}
+	}
+	if q.getTicketStmt != nil {
+		if cerr := q.getTicketStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getTicketStmt: %w", cerr)
+		}
+	}
 	if q.getUserStmt != nil {
 		if cerr := q.getUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getUserStmt: %w", cerr)
@@ -94,14 +304,84 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getUserByPhoneStmt: %w", cerr)
 		}
 	}
+	if q.listHallsStmt != nil {
+		if cerr := q.listHallsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listHallsStmt: %w", cerr)
+		}
+	}
+	if q.listMoviesStmt != nil {
+		if cerr := q.listMoviesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listMoviesStmt: %w", cerr)
+		}
+	}
+	if q.listPaymentsStmt != nil {
+		if cerr := q.listPaymentsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listPaymentsStmt: %w", cerr)
+		}
+	}
+	if q.listSeatsStmt != nil {
+		if cerr := q.listSeatsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listSeatsStmt: %w", cerr)
+		}
+	}
+	if q.listShowtimesStmt != nil {
+		if cerr := q.listShowtimesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listShowtimesStmt: %w", cerr)
+		}
+	}
+	if q.listTheatersStmt != nil {
+		if cerr := q.listTheatersStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listTheatersStmt: %w", cerr)
+		}
+	}
+	if q.listTicketsStmt != nil {
+		if cerr := q.listTicketsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listTicketsStmt: %w", cerr)
+		}
+	}
 	if q.listUsersStmt != nil {
 		if cerr := q.listUsersStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listUsersStmt: %w", cerr)
 		}
 	}
+	if q.updateHallStmt != nil {
+		if cerr := q.updateHallStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateHallStmt: %w", cerr)
+		}
+	}
+	if q.updateMovieStmt != nil {
+		if cerr := q.updateMovieStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateMovieStmt: %w", cerr)
+		}
+	}
+	if q.updatePaymentStmt != nil {
+		if cerr := q.updatePaymentStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updatePaymentStmt: %w", cerr)
+		}
+	}
 	if q.updateRoleStmt != nil {
 		if cerr := q.updateRoleStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateRoleStmt: %w", cerr)
+		}
+	}
+	if q.updateSeatStmt != nil {
+		if cerr := q.updateSeatStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateSeatStmt: %w", cerr)
+		}
+	}
+	if q.updateShowtimeStmt != nil {
+		if cerr := q.updateShowtimeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateShowtimeStmt: %w", cerr)
+		}
+	}
+	if q.updateTheaterStmt != nil {
+		if cerr := q.updateTheaterStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateTheaterStmt: %w", cerr)
+		}
+	}
+	if q.updateTicketStmt != nil {
+		if cerr := q.updateTicketStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateTicketStmt: %w", cerr)
 		}
 	}
 	if q.updateUserStmt != nil {
@@ -148,15 +428,50 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 type Queries struct {
 	db                 DBTX
 	tx                 *sql.Tx
+	createHallStmt     *sql.Stmt
+	createMovieStmt    *sql.Stmt
+	createPaymentStmt  *sql.Stmt
 	createRoleStmt     *sql.Stmt
+	createSeatStmt     *sql.Stmt
+	createShowtimeStmt *sql.Stmt
+	createTheaterStmt  *sql.Stmt
+	createTicketStmt   *sql.Stmt
 	createUserStmt     *sql.Stmt
+	deleteHallStmt     *sql.Stmt
+	deleteMovieStmt    *sql.Stmt
+	deletePaymentStmt  *sql.Stmt
+	deleteSeatStmt     *sql.Stmt
+	deleteShowtimeStmt *sql.Stmt
+	deleteTheaterStmt  *sql.Stmt
+	deleteTicketStmt   *sql.Stmt
 	deleteUserStmt     *sql.Stmt
+	getHallStmt        *sql.Stmt
+	getMovieStmt       *sql.Stmt
+	getPaymentStmt     *sql.Stmt
 	getRoleStmt        *sql.Stmt
 	getRolesStmt       *sql.Stmt
+	getSeatStmt        *sql.Stmt
+	getShowtimeStmt    *sql.Stmt
+	getTheaterStmt     *sql.Stmt
+	getTicketStmt      *sql.Stmt
 	getUserStmt        *sql.Stmt
 	getUserByPhoneStmt *sql.Stmt
+	listHallsStmt      *sql.Stmt
+	listMoviesStmt     *sql.Stmt
+	listPaymentsStmt   *sql.Stmt
+	listSeatsStmt      *sql.Stmt
+	listShowtimesStmt  *sql.Stmt
+	listTheatersStmt   *sql.Stmt
+	listTicketsStmt    *sql.Stmt
 	listUsersStmt      *sql.Stmt
+	updateHallStmt     *sql.Stmt
+	updateMovieStmt    *sql.Stmt
+	updatePaymentStmt  *sql.Stmt
 	updateRoleStmt     *sql.Stmt
+	updateSeatStmt     *sql.Stmt
+	updateShowtimeStmt *sql.Stmt
+	updateTheaterStmt  *sql.Stmt
+	updateTicketStmt   *sql.Stmt
 	updateUserStmt     *sql.Stmt
 }
 
@@ -164,15 +479,50 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
 		db:                 tx,
 		tx:                 tx,
+		createHallStmt:     q.createHallStmt,
+		createMovieStmt:    q.createMovieStmt,
+		createPaymentStmt:  q.createPaymentStmt,
 		createRoleStmt:     q.createRoleStmt,
+		createSeatStmt:     q.createSeatStmt,
+		createShowtimeStmt: q.createShowtimeStmt,
+		createTheaterStmt:  q.createTheaterStmt,
+		createTicketStmt:   q.createTicketStmt,
 		createUserStmt:     q.createUserStmt,
+		deleteHallStmt:     q.deleteHallStmt,
+		deleteMovieStmt:    q.deleteMovieStmt,
+		deletePaymentStmt:  q.deletePaymentStmt,
+		deleteSeatStmt:     q.deleteSeatStmt,
+		deleteShowtimeStmt: q.deleteShowtimeStmt,
+		deleteTheaterStmt:  q.deleteTheaterStmt,
+		deleteTicketStmt:   q.deleteTicketStmt,
 		deleteUserStmt:     q.deleteUserStmt,
+		getHallStmt:        q.getHallStmt,
+		getMovieStmt:       q.getMovieStmt,
+		getPaymentStmt:     q.getPaymentStmt,
 		getRoleStmt:        q.getRoleStmt,
 		getRolesStmt:       q.getRolesStmt,
+		getSeatStmt:        q.getSeatStmt,
+		getShowtimeStmt:    q.getShowtimeStmt,
+		getTheaterStmt:     q.getTheaterStmt,
+		getTicketStmt:      q.getTicketStmt,
 		getUserStmt:        q.getUserStmt,
 		getUserByPhoneStmt: q.getUserByPhoneStmt,
+		listHallsStmt:      q.listHallsStmt,
+		listMoviesStmt:     q.listMoviesStmt,
+		listPaymentsStmt:   q.listPaymentsStmt,
+		listSeatsStmt:      q.listSeatsStmt,
+		listShowtimesStmt:  q.listShowtimesStmt,
+		listTheatersStmt:   q.listTheatersStmt,
+		listTicketsStmt:    q.listTicketsStmt,
 		listUsersStmt:      q.listUsersStmt,
+		updateHallStmt:     q.updateHallStmt,
+		updateMovieStmt:    q.updateMovieStmt,
+		updatePaymentStmt:  q.updatePaymentStmt,
 		updateRoleStmt:     q.updateRoleStmt,
+		updateSeatStmt:     q.updateSeatStmt,
+		updateShowtimeStmt: q.updateShowtimeStmt,
+		updateTheaterStmt:  q.updateTheaterStmt,
+		updateTicketStmt:   q.updateTicketStmt,
 		updateUserStmt:     q.updateUserStmt,
 	}
 }
