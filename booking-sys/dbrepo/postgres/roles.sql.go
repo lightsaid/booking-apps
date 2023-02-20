@@ -15,9 +15,9 @@ VALUES ($1, $2, $3) RETURNING id, name, code, description, created_at, updated_a
 `
 
 type CreateRoleParams struct {
-	Name        string  `db:"name" json:"name"`
-	Code        string  `db:"code" json:"code"`
-	Description *string `db:"description" json:"description"`
+	Name        string  `json:"name"`
+	Code        string  `json:"code"`
+	Description *string `json:"description"`
 }
 
 func (q *Queries) CreateRole(ctx context.Context, arg CreateRoleParams) (*TbRole, error) {
@@ -59,8 +59,8 @@ SELECT id, name, code, description, created_at, updated_at, deleted_at FROM tb_r
 `
 
 type GetRolesParams struct {
-	Limit  int32 `db:"limit" json:"limit"`
-	Offset int32 `db:"offset" json:"offset"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
 func (q *Queries) GetRoles(ctx context.Context, arg GetRolesParams) ([]*TbRole, error) {
@@ -104,9 +104,9 @@ RETURNING id, name, code, description, created_at, updated_at, deleted_at
 `
 
 type UpdateRoleParams struct {
-	ID          int64   `db:"id" json:"id"`
-	Name        string  `db:"name" json:"name"`
-	Description *string `db:"description" json:"description"`
+	ID          int64   `json:"id"`
+	Name        string  `json:"name"`
+	Description *string `json:"description"`
 }
 
 func (q *Queries) UpdateRole(ctx context.Context, arg UpdateRoleParams) (*TbRole, error) {

@@ -1,0 +1,10 @@
+basePath: /v1/api
+host: localhost:5000
+info:
+  contact: {}
+  description: 这是电影院购票系统的后端服务API
+  termsOfService: https://github.com/lightsaid/booking-apps
+  title: Booking System API
+  version: "1.0"
+paths: {}
+swagger: "2.0"

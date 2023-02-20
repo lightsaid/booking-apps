@@ -17,12 +17,12 @@ INSERT INTO tb_tickets(
 `
 
 type CreateTicketParams struct {
-	UserID        *int64     `db:"user_id" json:"user_id"`
-	ShowtimeID    int64      `db:"showtime_id" json:"showtime_id"`
-	SeatID        int64      `db:"seat_id" json:"seat_id"`
-	Price         int32      `db:"price" json:"price"`
-	BookingDate   *time.Time `db:"booking_date" json:"booking_date"`
-	PaymentStatus *string    `db:"payment_status" json:"payment_status"`
+	UserID        *int64     `json:"user_id"`
+	ShowtimeID    int64      `json:"showtime_id"`
+	SeatID        int64      `json:"seat_id"`
+	Price         int32      `json:"price"`
+	BookingDate   *time.Time `json:"booking_date"`
+	PaymentStatus *string    `json:"payment_status"`
 }
 
 func (q *Queries) CreateTicket(ctx context.Context, arg CreateTicketParams) (*TbTicket, error) {
@@ -52,11 +52,11 @@ func (q *Queries) CreateTicket(ctx context.Context, arg CreateTicketParams) (*Tb
 
 const DeleteTicket = `-- name: DeleteTicket :one
 UPDATE tb_tickets
-SET deleted_at = now() WHERE deleted_at IS NULL RETURNING id, user_id, showtime_id, seat_id, price, booking_date, payment_status, created_at, updated_at, deleted_at
+SET deleted_at = now() WHERE id = $1 AND  deleted_at IS NULL RETURNING id, user_id, showtime_id, seat_id, price, booking_date, payment_status, created_at, updated_at, deleted_at
 `
 
-func (q *Queries) DeleteTicket(ctx context.Context) (*TbTicket, error) {
-	row := q.queryRow(ctx, q.deleteTicketStmt, DeleteTicket)
+func (q *Queries) DeleteTicket(ctx context.Context, id int64) (*TbTicket, error) {
+	row := q.queryRow(ctx, q.deleteTicketStmt, DeleteTicket, id)
 	var i TbTicket
 	err := row.Scan(
 		&i.ID,
@@ -100,8 +100,8 @@ SELECT id, user_id, showtime_id, seat_id, price, booking_date, payment_status, c
 `
 
 type ListTicketsParams struct {
-	Limit  int32 `db:"limit" json:"limit"`
-	Offset int32 `db:"offset" json:"offset"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
 func (q *Queries) ListTickets(ctx context.Context, arg ListTicketsParams) ([]*TbTicket, error) {
@@ -148,13 +148,13 @@ WHERE id=$1 AND  deleted_at IS NULL RETURNING id, user_id, showtime_id, seat_id,
 `
 
 type UpdateTicketParams struct {
-	ID            int64      `db:"id" json:"id"`
-	UserID        *int64     `db:"user_id" json:"user_id"`
-	ShowtimeID    int64      `db:"showtime_id" json:"showtime_id"`
-	SeatID        int64      `db:"seat_id" json:"seat_id"`
-	Price         int32      `db:"price" json:"price"`
-	BookingDate   *time.Time `db:"booking_date" json:"booking_date"`
-	PaymentStatus *string    `db:"payment_status" json:"payment_status"`
+	ID            int64      `json:"id"`
+	UserID        *int64     `json:"user_id"`
+	ShowtimeID    int64      `json:"showtime_id"`
+	SeatID        int64      `json:"seat_id"`
+	Price         int32      `json:"price"`
+	BookingDate   *time.Time `json:"booking_date"`
+	PaymentStatus *string    `json:"payment_status"`
 }
 
 func (q *Queries) UpdateTicket(ctx context.Context, arg UpdateTicketParams) (*TbTicket, error) {

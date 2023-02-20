@@ -19,12 +19,12 @@ INSERT INTO tb_payments(
 `
 
 type CreatePaymentParams struct {
-	UserID        *int64    `db:"user_id" json:"user_id"`
-	TicketID      *int64    `db:"ticket_id" json:"ticket_id"`
-	NumberOfSeats int32     `db:"NumberOfSeats" json:"NumberOfSeats"`
-	PaymentDate   time.Time `db:"payment_date" json:"payment_date"`
-	PaymentMethod string    `db:"payment_method" json:"payment_method"`
-	PaymentAmount int32     `db:"payment_amount" json:"payment_amount"`
+	UserID        *int64    `json:"user_id"`
+	TicketID      *int64    `json:"ticket_id"`
+	NumberOfSeats int32     `json:"NumberOfSeats"`
+	PaymentDate   time.Time `json:"payment_date"`
+	PaymentMethod string    `json:"payment_method"`
+	PaymentAmount int32     `json:"payment_amount"`
 }
 
 func (q *Queries) CreatePayment(ctx context.Context, arg CreatePaymentParams) (*TbPayment, error) {
@@ -54,11 +54,11 @@ func (q *Queries) CreatePayment(ctx context.Context, arg CreatePaymentParams) (*
 
 const DeletePayment = `-- name: DeletePayment :one
 UPDATE tb_payments
-SET deleted_at = now() WHERE deleted_at IS NULL RETURNING id, user_id, ticket_id, "NumberOfSeats", payment_date, payment_method, payment_amount, created_at, updated_at, deleted_at
+SET deleted_at = now() WHERE  id = $1 AND  deleted_at IS NULL RETURNING id, user_id, ticket_id, "NumberOfSeats", payment_date, payment_method, payment_amount, created_at, updated_at, deleted_at
 `
 
-func (q *Queries) DeletePayment(ctx context.Context) (*TbPayment, error) {
-	row := q.queryRow(ctx, q.deletePaymentStmt, DeletePayment)
+func (q *Queries) DeletePayment(ctx context.Context, id int64) (*TbPayment, error) {
+	row := q.queryRow(ctx, q.deletePaymentStmt, DeletePayment, id)
 	var i TbPayment
 	err := row.Scan(
 		&i.ID,
@@ -102,8 +102,8 @@ SELECT id, user_id, ticket_id, "NumberOfSeats", payment_date, payment_method, pa
 `
 
 type ListPaymentsParams struct {
-	Limit  int32 `db:"limit" json:"limit"`
-	Offset int32 `db:"offset" json:"offset"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
 func (q *Queries) ListPayments(ctx context.Context, arg ListPaymentsParams) ([]*TbPayment, error) {
@@ -150,13 +150,13 @@ WHERE id=$1 AND  deleted_at IS NULL RETURNING id, user_id, ticket_id, "NumberOfS
 `
 
 type UpdatePaymentParams struct {
-	ID            int64     `db:"id" json:"id"`
-	UserID        *int64    `db:"user_id" json:"user_id"`
-	TicketID      *int64    `db:"ticket_id" json:"ticket_id"`
-	NumberOfSeats int32     `db:"NumberOfSeats" json:"NumberOfSeats"`
-	PaymentDate   time.Time `db:"payment_date" json:"payment_date"`
-	PaymentMethod string    `db:"payment_method" json:"payment_method"`
-	PaymentAmount int32     `db:"payment_amount" json:"payment_amount"`
+	ID            int64     `json:"id"`
+	UserID        *int64    `json:"user_id"`
+	TicketID      *int64    `json:"ticket_id"`
+	NumberOfSeats int32     `json:"NumberOfSeats"`
+	PaymentDate   time.Time `json:"payment_date"`
+	PaymentMethod string    `json:"payment_method"`
+	PaymentAmount int32     `json:"payment_amount"`
 }
 
 func (q *Queries) UpdatePayment(ctx context.Context, arg UpdatePaymentParams) (*TbPayment, error) {

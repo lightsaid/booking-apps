@@ -23,13 +23,13 @@ INSERT INTO tb_users (
 `
 
 type CreateUserParams struct {
-	RoleID      int64   `db:"role_id" json:"role_id"`
-	PhoneNumber string  `db:"phone_number" json:"phone_number"`
-	Password    *string `db:"password" json:"password"`
-	Name        string  `db:"name" json:"name"`
-	Avatar      *string `db:"avatar" json:"avatar"`
-	Openid      *string `db:"openid" json:"openid"`
-	Unionid     *string `db:"unionid" json:"unionid"`
+	RoleID      int64   `json:"role_id"`
+	PhoneNumber string  `json:"phone_number"`
+	Password    *string `json:"password"`
+	Name        string  `json:"name"`
+	Avatar      *string `json:"avatar"`
+	Openid      *string `json:"openid"`
+	Unionid     *string `json:"unionid"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (*TbUser, error) {
@@ -67,8 +67,8 @@ RETURNING id, role_id, phone_number, password, name, avatar, openid, unionid, cr
 `
 
 type DeleteUserParams struct {
-	ID        int64      `db:"id" json:"id"`
-	DeletedAt *time.Time `db:"deleted_at" json:"deleted_at"`
+	ID        int64      `json:"id"`
+	DeletedAt *time.Time `json:"deleted_at"`
 }
 
 func (q *Queries) DeleteUser(ctx context.Context, arg DeleteUserParams) (*TbUser, error) {
@@ -141,8 +141,8 @@ SELECT id, role_id, phone_number, password, name, avatar, openid, unionid, creat
 `
 
 type ListUsersParams struct {
-	Limit  int32 `db:"limit" json:"limit"`
-	Offset int32 `db:"offset" json:"offset"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
 func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]*TbUser, error) {
@@ -193,12 +193,12 @@ RETURNING id, role_id, phone_number, password, name, avatar, openid, unionid, cr
 `
 
 type UpdateUserParams struct {
-	ID        int64     `db:"id" json:"id"`
-	Name      string    `db:"name" json:"name"`
-	Avatar    *string   `db:"avatar" json:"avatar"`
-	Openid    *string   `db:"openid" json:"openid"`
-	Unionid   *string   `db:"unionid" json:"unionid"`
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
+	ID        int64     `json:"id"`
+	Name      string    `json:"name"`
+	Avatar    *string   `json:"avatar"`
+	Openid    *string   `json:"openid"`
+	Unionid   *string   `json:"unionid"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*TbUser, error) {

@@ -14,8 +14,8 @@ INSERT INTO tb_theaters("name", "location") VALUES($1, $2) RETURNING id, name, l
 `
 
 type CreateTheaterParams struct {
-	Name     string  `db:"name" json:"name"`
-	Location *string `db:"location" json:"location"`
+	Name     string  `json:"name"`
+	Location *string `json:"location"`
 }
 
 func (q *Queries) CreateTheater(ctx context.Context, arg CreateTheaterParams) (*TbTheater, error) {
@@ -34,11 +34,11 @@ func (q *Queries) CreateTheater(ctx context.Context, arg CreateTheaterParams) (*
 
 const DeleteTheater = `-- name: DeleteTheater :one
 UPDATE tb_theaters
-SET deleted_at = now() WHERE deleted_at IS NULL RETURNING id, name, location, created_at, updated_at, deleted_at
+SET deleted_at = now() WHERE  id = $1 AND deleted_at IS NULL RETURNING id, name, location, created_at, updated_at, deleted_at
 `
 
-func (q *Queries) DeleteTheater(ctx context.Context) (*TbTheater, error) {
-	row := q.queryRow(ctx, q.deleteTheaterStmt, DeleteTheater)
+func (q *Queries) DeleteTheater(ctx context.Context, id int64) (*TbTheater, error) {
+	row := q.queryRow(ctx, q.deleteTheaterStmt, DeleteTheater, id)
 	var i TbTheater
 	err := row.Scan(
 		&i.ID,
@@ -74,8 +74,8 @@ SELECT id, name, location, created_at, updated_at, deleted_at FROM tb_theaters W
 `
 
 type ListTheatersParams struct {
-	Limit  int32 `db:"limit" json:"limit"`
-	Offset int32 `db:"offset" json:"offset"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
 func (q *Queries) ListTheaters(ctx context.Context, arg ListTheatersParams) ([]*TbTheater, error) {
@@ -114,9 +114,9 @@ SET "name" = $2, "location" = $3 WHERE id = $1 AND  deleted_at IS NULL RETURNING
 `
 
 type UpdateTheaterParams struct {
-	ID       int64   `db:"id" json:"id"`
-	Name     string  `db:"name" json:"name"`
-	Location *string `db:"location" json:"location"`
+	ID       int64   `json:"id"`
+	Name     string  `json:"name"`
+	Location *string `json:"location"`
 }
 
 func (q *Queries) UpdateTheater(ctx context.Context, arg UpdateTheaterParams) (*TbTheater, error) {

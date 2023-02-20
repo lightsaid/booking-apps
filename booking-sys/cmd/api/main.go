@@ -8,9 +8,17 @@ import (
 	_ "github.com/lib/pq"
 
 	dbrepo "github.com/lightsaid/booking-sys/dbrepo/postgres"
+	_ "github.com/lightsaid/booking-sys/docs"
 	"github.com/lightsaid/booking-sys/pkg/settings"
 )
 
+// @title Booking System API
+// @version 1.0
+// @description 这是电影院购票系统的后端服务API
+// @termsOfService https://github.com/lightsaid/booking-apps
+
+// @host localhost:5000
+// @BasePath /v1/api
 func main() {
 	// 1. 读取配置文件
 	var config settings.AppConfig

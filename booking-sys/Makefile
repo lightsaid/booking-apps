@@ -31,3 +31,6 @@ sqlc:
 run: 
 	go run ./cmd/api/*.go
 
+## doc: swag init
+doc:
+	swag init -d ./cmd/api

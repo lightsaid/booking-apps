@@ -17,4 +17,4 @@ WHERE id=$1 AND  deleted_at IS NULL RETURNING *;
 
 -- name: DeleteSeat :one
 UPDATE tb_seats
-SET deleted_at = now() WHERE deleted_at IS NULL RETURNING *;
+SET deleted_at = now() WHERE id = $1 AND deleted_at IS NULL RETURNING *;

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"toolkit/dberr"
 
 	"github.com/gin-gonic/gin"
@@ -38,8 +37,6 @@ func (s *Server) listTheaters(c *gin.Context) {
 		return
 	}
 	list, err := s.store.ListTheaters(c, dbrepo.ListTheatersParams{Limit: req.PageSize, Offset: req.GetPageNum()})
-	fmt.Println(list)
-	fmt.Println(">>>", len(list), req.PageNum, req.PageSize)
 	if err != nil {
 		e, _ := dberr.HandleDBError(err)
 		app.ToErrorResponse(c, e)
@@ -89,4 +86,18 @@ func (s *Server) updateTheater(c *gin.Context) {
 		return
 	}
 	app.ToResponse(c, t)
+}
+
+func (s *Server) delTheater(c *gin.Context) {
+	var uri idUriRequest
+	if ok := app.BindRequestUri(c, &uri); !ok {
+		return
+	}
+	_, err := s.store.DeleteTheater(c.Request.Context(), uri.ID)
+	if err != nil {
+		e, _ := dberr.HandleDBError(err)
+		app.ToErrorResponse(c, e)
+		return
+	}
+	app.ToResponse(c, nil)
 }

@@ -21,10 +21,10 @@ VALUES($1, $2, $3, $4) RETURNING id, movie_id, hall_id, start_time, end_time, cr
 `
 
 type CreateShowtimeParams struct {
-	MovieID   int64     `db:"movie_id" json:"movie_id"`
-	HallID    int64     `db:"hall_id" json:"hall_id"`
-	StartTime time.Time `db:"start_time" json:"start_time"`
-	EndTime   time.Time `db:"end_time" json:"end_time"`
+	MovieID   int64     `json:"movie_id"`
+	HallID    int64     `json:"hall_id"`
+	StartTime time.Time `json:"start_time"`
+	EndTime   time.Time `json:"end_time"`
 }
 
 func (q *Queries) CreateShowtime(ctx context.Context, arg CreateShowtimeParams) (*TbShowtime, error) {
@@ -93,8 +93,8 @@ SELECT id, movie_id, hall_id, start_time, end_time, created_at, updated_at, dele
 `
 
 type ListShowtimesParams struct {
-	Limit  int32 `db:"limit" json:"limit"`
-	Offset int32 `db:"offset" json:"offset"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
 func (q *Queries) ListShowtimes(ctx context.Context, arg ListShowtimesParams) ([]*TbShowtime, error) {
@@ -140,11 +140,11 @@ RETURNING id, movie_id, hall_id, start_time, end_time, created_at, updated_at, d
 `
 
 type UpdateShowtimeParams struct {
-	ID        int64     `db:"id" json:"id"`
-	MovieID   int64     `db:"movie_id" json:"movie_id"`
-	HallID    int64     `db:"hall_id" json:"hall_id"`
-	StartTime time.Time `db:"start_time" json:"start_time"`
-	EndTime   time.Time `db:"end_time" json:"end_time"`
+	ID        int64     `json:"id"`
+	MovieID   int64     `json:"movie_id"`
+	HallID    int64     `json:"hall_id"`
+	StartTime time.Time `json:"start_time"`
+	EndTime   time.Time `json:"end_time"`
 }
 
 func (q *Queries) UpdateShowtime(ctx context.Context, arg UpdateShowtimeParams) (*TbShowtime, error) {

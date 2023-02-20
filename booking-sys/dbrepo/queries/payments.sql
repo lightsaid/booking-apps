@@ -21,4 +21,4 @@ WHERE id=$1 AND  deleted_at IS NULL RETURNING *;
 
 -- name: DeletePayment :one
 UPDATE tb_payments
-SET deleted_at = now() WHERE deleted_at IS NULL RETURNING *;
+SET deleted_at = now() WHERE  id = $1 AND  deleted_at IS NULL RETURNING *;

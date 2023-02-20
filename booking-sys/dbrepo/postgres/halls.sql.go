@@ -14,9 +14,9 @@ INSERT INTO tb_halls("theater_id", "name", "total_seats") VALUES($1, $2, $3) RET
 `
 
 type CreateHallParams struct {
-	TheaterID  int64  `db:"theater_id" json:"theater_id"`
-	Name       string `db:"name" json:"name"`
-	TotalSeats *int32 `db:"total_seats" json:"total_seats"`
+	TheaterID  int64  `json:"theater_id"`
+	Name       string `json:"name"`
+	TotalSeats *int32 `json:"total_seats"`
 }
 
 func (q *Queries) CreateHall(ctx context.Context, arg CreateHallParams) (*TbHall, error) {
@@ -36,11 +36,11 @@ func (q *Queries) CreateHall(ctx context.Context, arg CreateHallParams) (*TbHall
 
 const DeleteHall = `-- name: DeleteHall :one
 UPDATE tb_halls
-SET deleted_at = now() WHERE deleted_at IS NULL RETURNING id, theater_id, name, total_seats, created_at, updated_at, deleted_at
+SET deleted_at = now() WHERE id = $1 AND  deleted_at IS NULL RETURNING id, theater_id, name, total_seats, created_at, updated_at, deleted_at
 `
 
-func (q *Queries) DeleteHall(ctx context.Context) (*TbHall, error) {
-	row := q.queryRow(ctx, q.deleteHallStmt, DeleteHall)
+func (q *Queries) DeleteHall(ctx context.Context, id int64) (*TbHall, error) {
+	row := q.queryRow(ctx, q.deleteHallStmt, DeleteHall, id)
 	var i TbHall
 	err := row.Scan(
 		&i.ID,
@@ -78,8 +78,8 @@ SELECT id, theater_id, name, total_seats, created_at, updated_at, deleted_at FRO
 `
 
 type ListHallsParams struct {
-	Limit  int32 `db:"limit" json:"limit"`
-	Offset int32 `db:"offset" json:"offset"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
 func (q *Queries) ListHalls(ctx context.Context, arg ListHallsParams) ([]*TbHall, error) {
@@ -121,10 +121,10 @@ WHERE id=$1 AND  deleted_at IS NULL RETURNING id, theater_id, name, total_seats,
 `
 
 type UpdateHallParams struct {
-	ID         int64  `db:"id" json:"id"`
-	TheaterID  int64  `db:"theater_id" json:"theater_id"`
-	Name       string `db:"name" json:"name"`
-	TotalSeats *int32 `db:"total_seats" json:"total_seats"`
+	ID         int64  `json:"id"`
+	TheaterID  int64  `json:"theater_id"`
+	Name       string `json:"name"`
+	TotalSeats *int32 `json:"total_seats"`
 }
 
 func (q *Queries) UpdateHall(ctx context.Context, arg UpdateHallParams) (*TbHall, error) {

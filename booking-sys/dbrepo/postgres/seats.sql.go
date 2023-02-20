@@ -16,10 +16,10 @@ INSERT INTO tb_seats(
 `
 
 type CreateSeatParams struct {
-	HallID    int64  `db:"hall_id" json:"hall_id"`
-	ColNumber int32  `db:"col_number" json:"col_number"`
-	RowNumber int32  `db:"row_number" json:"row_number"`
-	Status    string `db:"status" json:"status"`
+	HallID    int64  `json:"hall_id"`
+	ColNumber int32  `json:"col_number"`
+	RowNumber int32  `json:"row_number"`
+	Status    string `json:"status"`
 }
 
 func (q *Queries) CreateSeat(ctx context.Context, arg CreateSeatParams) (*TbSeat, error) {
@@ -45,11 +45,11 @@ func (q *Queries) CreateSeat(ctx context.Context, arg CreateSeatParams) (*TbSeat
 
 const DeleteSeat = `-- name: DeleteSeat :one
 UPDATE tb_seats
-SET deleted_at = now() WHERE deleted_at IS NULL RETURNING id, hall_id, col_number, row_number, status, created_at, updated_at, deleted_at
+SET deleted_at = now() WHERE id = $1 AND deleted_at IS NULL RETURNING id, hall_id, col_number, row_number, status, created_at, updated_at, deleted_at
 `
 
-func (q *Queries) DeleteSeat(ctx context.Context) (*TbSeat, error) {
-	row := q.queryRow(ctx, q.deleteSeatStmt, DeleteSeat)
+func (q *Queries) DeleteSeat(ctx context.Context, id int64) (*TbSeat, error) {
+	row := q.queryRow(ctx, q.deleteSeatStmt, DeleteSeat, id)
 	var i TbSeat
 	err := row.Scan(
 		&i.ID,
@@ -89,8 +89,8 @@ SELECT id, hall_id, col_number, row_number, status, created_at, updated_at, dele
 `
 
 type ListSeatsParams struct {
-	Limit  int32 `db:"limit" json:"limit"`
-	Offset int32 `db:"offset" json:"offset"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
 func (q *Queries) ListSeats(ctx context.Context, arg ListSeatsParams) ([]*TbSeat, error) {
@@ -133,11 +133,11 @@ WHERE id=$1 AND  deleted_at IS NULL RETURNING id, hall_id, col_number, row_numbe
 `
 
 type UpdateSeatParams struct {
-	ID        int64  `db:"id" json:"id"`
-	HallID    int64  `db:"hall_id" json:"hall_id"`
-	ColNumber int32  `db:"col_number" json:"col_number"`
-	RowNumber int32  `db:"row_number" json:"row_number"`
-	Status    string `db:"status" json:"status"`
+	ID        int64  `json:"id"`
+	HallID    int64  `json:"hall_id"`
+	ColNumber int32  `json:"col_number"`
+	RowNumber int32  `json:"row_number"`
+	Status    string `json:"status"`
 }
 
 func (q *Queries) UpdateSeat(ctx context.Context, arg UpdateSeatParams) (*TbSeat, error) {
