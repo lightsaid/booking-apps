@@ -22,3 +22,19 @@ docker/database
 
 
 # 前端忽略文件
+/booking-web/node_modules
+/booking-web/.env.local
+/booking-web/.umirc.local.ts
+/booking-web/config/config.local.ts
+/booking-web/src/.umi
+/booking-web/src/.umi-production
+/booking-web/src/.umi-test
+/booking-web/.umi
+/booking-web/.umi-production
+/booking-web/.umi-test
+/booking-web/dist
+/booking-web/.mfsu
+/booking-web.swc
+
+
+

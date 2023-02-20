@@ -14,6 +14,9 @@
 		},
 		{
 			"path": "toolkit"
+		},
+		{
+			"path": "booking-web"
 		}
 	]
 }

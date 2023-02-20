@@ -31,4 +31,20 @@
 ### tb_seats 座位表业务实现
 
 
+### 记一个问题
+因为数据库小部分字段设置可以为NULL的，因此在执行 sqlc generate 命令生成的代码带有sql.NullXXX类型，
+然后格式化为JSON格式传输给前端，格式化后的结构并不友好，如：
+``` json
+"location": {
+    "String": "广州市番禺区祈福缤纷世界",
+    "Valid": true
+},
+```
+参考：https://github.com/kyleconroy/sqlc/pull/1571
+
+这是是一个功能性缺陷问题，还有待sqlc解决，已PR提交。。。
+
+
+### 构思接口
+基础表的CRUD
 
