@@ -7,7 +7,6 @@ package dbrepo
 
 import (
 	"context"
-	"database/sql"
 	"time"
 )
 
@@ -26,14 +25,14 @@ RETURNING id, title, release_date, director, poster, duration, genre, star, desc
 `
 
 type CreateMovieParams struct {
-	Title       string         `db:"title" json:"title"`
-	ReleaseDate time.Time      `db:"release_date" json:"release_date"`
-	Director    string         `db:"director" json:"director"`
-	Poster      string         `db:"poster" json:"poster"`
-	Duration    int32          `db:"duration" json:"duration"`
-	Genre       sql.NullString `db:"genre" json:"genre"`
-	Star        sql.NullString `db:"star" json:"star"`
-	Description sql.NullString `db:"description" json:"description"`
+	Title       string    `db:"title" json:"title"`
+	ReleaseDate time.Time `db:"release_date" json:"release_date"`
+	Director    string    `db:"director" json:"director"`
+	Poster      string    `db:"poster" json:"poster"`
+	Duration    int32     `db:"duration" json:"duration"`
+	Genre       *string   `db:"genre" json:"genre"`
+	Star        *string   `db:"star" json:"star"`
+	Description *string   `db:"description" json:"description"`
 }
 
 func (q *Queries) CreateMovie(ctx context.Context, arg CreateMovieParams) (*TbMovie, error) {
@@ -173,15 +172,15 @@ RETURNING id, title, release_date, director, poster, duration, genre, star, desc
 `
 
 type UpdateMovieParams struct {
-	ID          int64          `db:"id" json:"id"`
-	Title       string         `db:"title" json:"title"`
-	ReleaseDate time.Time      `db:"release_date" json:"release_date"`
-	Director    string         `db:"director" json:"director"`
-	Poster      string         `db:"poster" json:"poster"`
-	Duration    int32          `db:"duration" json:"duration"`
-	Genre       sql.NullString `db:"genre" json:"genre"`
-	Star        sql.NullString `db:"star" json:"star"`
-	Description sql.NullString `db:"description" json:"description"`
+	ID          int64     `db:"id" json:"id"`
+	Title       string    `db:"title" json:"title"`
+	ReleaseDate time.Time `db:"release_date" json:"release_date"`
+	Director    string    `db:"director" json:"director"`
+	Poster      string    `db:"poster" json:"poster"`
+	Duration    int32     `db:"duration" json:"duration"`
+	Genre       *string   `db:"genre" json:"genre"`
+	Star        *string   `db:"star" json:"star"`
+	Description *string   `db:"description" json:"description"`
 }
 
 func (q *Queries) UpdateMovie(ctx context.Context, arg UpdateMovieParams) (*TbMovie, error) {

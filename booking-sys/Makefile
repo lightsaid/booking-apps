@@ -17,9 +17,17 @@ migrate_down:
 migrate_force:
 	migrate -database ${DB_URL} -path ./dbrepo/migrations force $$V
 
+## null: 替换sql.NullXXX 为指针类型
+null:
+	go run ./cmd/replace_null/*.go
+	goimports -w ./dbrepo/postgres
+
 ## sqlc: 使用 sqlc generate 生成代码
 sqlc:
 	sqlc generate
-
+	make null
+	
+## run: 启动api服务
 run: 
 	go run ./cmd/api/*.go
+

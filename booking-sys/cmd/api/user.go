@@ -46,13 +46,7 @@ func (s *Server) getListUsers(c *gin.Context) {
 		return
 	}
 
-	var users []*userResponse
-	for _, l := range list {
-		var res userResponse
-		res.toUserResponse(l)
-		users = append(users, &res)
-	}
-	app.ToResponse(c, users)
+	app.ToResponse(c, list)
 }
 
 func (s *Server) getUserById(c *gin.Context) {
@@ -70,7 +64,5 @@ func (s *Server) getUserById(c *gin.Context) {
 		return
 	}
 
-	var res userResponse
-	res.toUserResponse(user)
-	app.ToResponse(c, res)
+	app.ToResponse(c, user)
 }

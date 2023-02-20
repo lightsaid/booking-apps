@@ -7,7 +7,7 @@ package dbrepo
 
 import (
 	"context"
-	"database/sql"
+	"time"
 )
 
 const CreateTicket = `-- name: CreateTicket :one
@@ -17,12 +17,12 @@ INSERT INTO tb_tickets(
 `
 
 type CreateTicketParams struct {
-	UserID        sql.NullInt64  `db:"user_id" json:"user_id"`
-	ShowtimeID    int64          `db:"showtime_id" json:"showtime_id"`
-	SeatID        int64          `db:"seat_id" json:"seat_id"`
-	Price         int32          `db:"price" json:"price"`
-	BookingDate   sql.NullTime   `db:"booking_date" json:"booking_date"`
-	PaymentStatus sql.NullString `db:"payment_status" json:"payment_status"`
+	UserID        *int64     `db:"user_id" json:"user_id"`
+	ShowtimeID    int64      `db:"showtime_id" json:"showtime_id"`
+	SeatID        int64      `db:"seat_id" json:"seat_id"`
+	Price         int32      `db:"price" json:"price"`
+	BookingDate   *time.Time `db:"booking_date" json:"booking_date"`
+	PaymentStatus *string    `db:"payment_status" json:"payment_status"`
 }
 
 func (q *Queries) CreateTicket(ctx context.Context, arg CreateTicketParams) (*TbTicket, error) {
@@ -148,13 +148,13 @@ WHERE id=$1 AND  deleted_at IS NULL RETURNING id, user_id, showtime_id, seat_id,
 `
 
 type UpdateTicketParams struct {
-	ID            int64          `db:"id" json:"id"`
-	UserID        sql.NullInt64  `db:"user_id" json:"user_id"`
-	ShowtimeID    int64          `db:"showtime_id" json:"showtime_id"`
-	SeatID        int64          `db:"seat_id" json:"seat_id"`
-	Price         int32          `db:"price" json:"price"`
-	BookingDate   sql.NullTime   `db:"booking_date" json:"booking_date"`
-	PaymentStatus sql.NullString `db:"payment_status" json:"payment_status"`
+	ID            int64      `db:"id" json:"id"`
+	UserID        *int64     `db:"user_id" json:"user_id"`
+	ShowtimeID    int64      `db:"showtime_id" json:"showtime_id"`
+	SeatID        int64      `db:"seat_id" json:"seat_id"`
+	Price         int32      `db:"price" json:"price"`
+	BookingDate   *time.Time `db:"booking_date" json:"booking_date"`
+	PaymentStatus *string    `db:"payment_status" json:"payment_status"`
 }
 
 func (q *Queries) UpdateTicket(ctx context.Context, arg UpdateTicketParams) (*TbTicket, error) {

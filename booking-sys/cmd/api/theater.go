@@ -1,7 +1,7 @@
 package main
 
 import (
-	"database/sql"
+	"fmt"
 	"toolkit/dberr"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +21,7 @@ func (s *Server) createTheater(c *gin.Context) {
 	}
 	t, err := s.store.CreateTheater(c.Request.Context(), dbrepo.CreateTheaterParams{
 		Name:     req.Name,
-		Location: sql.NullString{String: req.Location, Valid: true},
+		Location: &req.Location,
 	})
 	if err != nil {
 		e, _ := dberr.HandleDBError(err)
@@ -37,14 +37,16 @@ func (s *Server) listTheaters(c *gin.Context) {
 	if ok := app.BindRequest(c, &req); !ok {
 		return
 	}
-	t, err := s.store.ListTheaters(c, dbrepo.ListTheatersParams{Limit: req.PageSize, Offset: req.PageNum})
+	list, err := s.store.ListTheaters(c, dbrepo.ListTheatersParams{Limit: req.PageSize, Offset: req.GetPageNum()})
+	fmt.Println(list)
+	fmt.Println(">>>", len(list), req.PageNum, req.PageSize)
 	if err != nil {
 		e, _ := dberr.HandleDBError(err)
 		app.ToErrorResponse(c, e)
 		return
 	}
 
-	app.ToResponse(c, t)
+	app.ToResponse(c, list)
 }
 
 func (s *Server) getTheater(c *gin.Context) {
@@ -79,7 +81,7 @@ func (s *Server) updateTheater(c *gin.Context) {
 	t, err := s.store.UpdateTheater(c.Request.Context(), dbrepo.UpdateTheaterParams{
 		ID:       uri.ID,
 		Name:     req.Name,
-		Location: sql.NullString{String: req.Location, Valid: true},
+		Location: &req.Location,
 	})
 	if err != nil {
 		e, _ := dberr.HandleDBError(err)

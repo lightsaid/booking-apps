@@ -7,7 +7,6 @@ package dbrepo
 
 import (
 	"context"
-	"database/sql"
 	"time"
 )
 
@@ -20,12 +19,12 @@ INSERT INTO tb_payments(
 `
 
 type CreatePaymentParams struct {
-	UserID        sql.NullInt64 `db:"user_id" json:"user_id"`
-	TicketID      sql.NullInt64 `db:"ticket_id" json:"ticket_id"`
-	NumberOfSeats int32         `db:"NumberOfSeats" json:"NumberOfSeats"`
-	PaymentDate   time.Time     `db:"payment_date" json:"payment_date"`
-	PaymentMethod string        `db:"payment_method" json:"payment_method"`
-	PaymentAmount int32         `db:"payment_amount" json:"payment_amount"`
+	UserID        *int64    `db:"user_id" json:"user_id"`
+	TicketID      *int64    `db:"ticket_id" json:"ticket_id"`
+	NumberOfSeats int32     `db:"NumberOfSeats" json:"NumberOfSeats"`
+	PaymentDate   time.Time `db:"payment_date" json:"payment_date"`
+	PaymentMethod string    `db:"payment_method" json:"payment_method"`
+	PaymentAmount int32     `db:"payment_amount" json:"payment_amount"`
 }
 
 func (q *Queries) CreatePayment(ctx context.Context, arg CreatePaymentParams) (*TbPayment, error) {
@@ -151,13 +150,13 @@ WHERE id=$1 AND  deleted_at IS NULL RETURNING id, user_id, ticket_id, "NumberOfS
 `
 
 type UpdatePaymentParams struct {
-	ID            int64         `db:"id" json:"id"`
-	UserID        sql.NullInt64 `db:"user_id" json:"user_id"`
-	TicketID      sql.NullInt64 `db:"ticket_id" json:"ticket_id"`
-	NumberOfSeats int32         `db:"NumberOfSeats" json:"NumberOfSeats"`
-	PaymentDate   time.Time     `db:"payment_date" json:"payment_date"`
-	PaymentMethod string        `db:"payment_method" json:"payment_method"`
-	PaymentAmount int32         `db:"payment_amount" json:"payment_amount"`
+	ID            int64     `db:"id" json:"id"`
+	UserID        *int64    `db:"user_id" json:"user_id"`
+	TicketID      *int64    `db:"ticket_id" json:"ticket_id"`
+	NumberOfSeats int32     `db:"NumberOfSeats" json:"NumberOfSeats"`
+	PaymentDate   time.Time `db:"payment_date" json:"payment_date"`
+	PaymentMethod string    `db:"payment_method" json:"payment_method"`
+	PaymentAmount int32     `db:"payment_amount" json:"payment_amount"`
 }
 
 func (q *Queries) UpdatePayment(ctx context.Context, arg UpdatePaymentParams) (*TbPayment, error) {

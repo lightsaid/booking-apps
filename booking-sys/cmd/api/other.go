@@ -21,6 +21,13 @@ type pagingRequrest struct {
 	PageNum int32 `form:"page_num" binding:"required,min=1"`
 }
 
+func (p *pagingRequrest) GetPageNum() int32 {
+	if p.PageNum <= 0 {
+		p.PageNum = 1
+	}
+	return (p.PageNum - 1) * p.PageSize
+}
+
 type idUriRequest struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }

@@ -7,7 +7,6 @@ package dbrepo
 
 import (
 	"context"
-	"database/sql"
 )
 
 const CreateHall = `-- name: CreateHall :one
@@ -15,9 +14,9 @@ INSERT INTO tb_halls("theater_id", "name", "total_seats") VALUES($1, $2, $3) RET
 `
 
 type CreateHallParams struct {
-	TheaterID  int64         `db:"theater_id" json:"theater_id"`
-	Name       string        `db:"name" json:"name"`
-	TotalSeats sql.NullInt32 `db:"total_seats" json:"total_seats"`
+	TheaterID  int64  `db:"theater_id" json:"theater_id"`
+	Name       string `db:"name" json:"name"`
+	TotalSeats *int32 `db:"total_seats" json:"total_seats"`
 }
 
 func (q *Queries) CreateHall(ctx context.Context, arg CreateHallParams) (*TbHall, error) {
@@ -122,10 +121,10 @@ WHERE id=$1 AND  deleted_at IS NULL RETURNING id, theater_id, name, total_seats,
 `
 
 type UpdateHallParams struct {
-	ID         int64         `db:"id" json:"id"`
-	TheaterID  int64         `db:"theater_id" json:"theater_id"`
-	Name       string        `db:"name" json:"name"`
-	TotalSeats sql.NullInt32 `db:"total_seats" json:"total_seats"`
+	ID         int64  `db:"id" json:"id"`
+	TheaterID  int64  `db:"theater_id" json:"theater_id"`
+	Name       string `db:"name" json:"name"`
+	TotalSeats *int32 `db:"total_seats" json:"total_seats"`
 }
 
 func (q *Queries) UpdateHall(ctx context.Context, arg UpdateHallParams) (*TbHall, error) {

@@ -7,7 +7,6 @@ package dbrepo
 
 import (
 	"context"
-	"database/sql"
 )
 
 const CreateTheater = `-- name: CreateTheater :one
@@ -15,8 +14,8 @@ INSERT INTO tb_theaters("name", "location") VALUES($1, $2) RETURNING id, name, l
 `
 
 type CreateTheaterParams struct {
-	Name     string         `db:"name" json:"name"`
-	Location sql.NullString `db:"location" json:"location"`
+	Name     string  `db:"name" json:"name"`
+	Location *string `db:"location" json:"location"`
 }
 
 func (q *Queries) CreateTheater(ctx context.Context, arg CreateTheaterParams) (*TbTheater, error) {
@@ -115,9 +114,9 @@ SET "name" = $2, "location" = $3 WHERE id = $1 AND  deleted_at IS NULL RETURNING
 `
 
 type UpdateTheaterParams struct {
-	ID       int64          `db:"id" json:"id"`
-	Name     string         `db:"name" json:"name"`
-	Location sql.NullString `db:"location" json:"location"`
+	ID       int64   `db:"id" json:"id"`
+	Name     string  `db:"name" json:"name"`
+	Location *string `db:"location" json:"location"`
 }
 
 func (q *Queries) UpdateTheater(ctx context.Context, arg UpdateTheaterParams) (*TbTheater, error) {

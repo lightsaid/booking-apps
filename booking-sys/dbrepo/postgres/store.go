@@ -61,10 +61,8 @@ func (store *SQLStore) TestRoleTx(ctx context.Context) (int64, error) {
 			return err
 		}
 		id = role.ID
-		desc := sql.NullString{
-			String: "查看后台管理系统权限",
-		}
-		_, err = q.UpdateRole(ctx, UpdateRoleParams{ID: role.ID, Name: role.Name, Description: desc})
+		desc := "查看后台管理系统权限"
+		_, err = q.UpdateRole(ctx, UpdateRoleParams{ID: role.ID, Name: role.Name, Description: &desc})
 		return err
 	})
 

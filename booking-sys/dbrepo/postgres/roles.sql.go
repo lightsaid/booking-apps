@@ -7,7 +7,6 @@ package dbrepo
 
 import (
 	"context"
-	"database/sql"
 )
 
 const CreateRole = `-- name: CreateRole :one
@@ -16,9 +15,9 @@ VALUES ($1, $2, $3) RETURNING id, name, code, description, created_at, updated_a
 `
 
 type CreateRoleParams struct {
-	Name        string         `db:"name" json:"name"`
-	Code        string         `db:"code" json:"code"`
-	Description sql.NullString `db:"description" json:"description"`
+	Name        string  `db:"name" json:"name"`
+	Code        string  `db:"code" json:"code"`
+	Description *string `db:"description" json:"description"`
 }
 
 func (q *Queries) CreateRole(ctx context.Context, arg CreateRoleParams) (*TbRole, error) {
@@ -105,9 +104,9 @@ RETURNING id, name, code, description, created_at, updated_at, deleted_at
 `
 
 type UpdateRoleParams struct {
-	ID          int64          `db:"id" json:"id"`
-	Name        string         `db:"name" json:"name"`
-	Description sql.NullString `db:"description" json:"description"`
+	ID          int64   `db:"id" json:"id"`
+	Name        string  `db:"name" json:"name"`
+	Description *string `db:"description" json:"description"`
 }
 
 func (q *Queries) UpdateRole(ctx context.Context, arg UpdateRoleParams) (*TbRole, error) {

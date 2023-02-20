@@ -7,7 +7,6 @@ package dbrepo
 
 import (
 	"context"
-	"database/sql"
 	"time"
 )
 
@@ -24,13 +23,13 @@ INSERT INTO tb_users (
 `
 
 type CreateUserParams struct {
-	RoleID      int64          `db:"role_id" json:"role_id"`
-	PhoneNumber string         `db:"phone_number" json:"phone_number"`
-	Password    sql.NullString `db:"password" json:"password"`
-	Name        string         `db:"name" json:"name"`
-	Avatar      sql.NullString `db:"avatar" json:"avatar"`
-	Openid      sql.NullString `db:"openid" json:"openid"`
-	Unionid     sql.NullString `db:"unionid" json:"unionid"`
+	RoleID      int64   `db:"role_id" json:"role_id"`
+	PhoneNumber string  `db:"phone_number" json:"phone_number"`
+	Password    *string `db:"password" json:"password"`
+	Name        string  `db:"name" json:"name"`
+	Avatar      *string `db:"avatar" json:"avatar"`
+	Openid      *string `db:"openid" json:"openid"`
+	Unionid     *string `db:"unionid" json:"unionid"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (*TbUser, error) {
@@ -68,8 +67,8 @@ RETURNING id, role_id, phone_number, password, name, avatar, openid, unionid, cr
 `
 
 type DeleteUserParams struct {
-	ID        int64        `db:"id" json:"id"`
-	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at"`
+	ID        int64      `db:"id" json:"id"`
+	DeletedAt *time.Time `db:"deleted_at" json:"deleted_at"`
 }
 
 func (q *Queries) DeleteUser(ctx context.Context, arg DeleteUserParams) (*TbUser, error) {
@@ -194,12 +193,12 @@ RETURNING id, role_id, phone_number, password, name, avatar, openid, unionid, cr
 `
 
 type UpdateUserParams struct {
-	ID        int64          `db:"id" json:"id"`
-	Name      string         `db:"name" json:"name"`
-	Avatar    sql.NullString `db:"avatar" json:"avatar"`
-	Openid    sql.NullString `db:"openid" json:"openid"`
-	Unionid   sql.NullString `db:"unionid" json:"unionid"`
-	UpdatedAt time.Time      `db:"updated_at" json:"updated_at"`
+	ID        int64     `db:"id" json:"id"`
+	Name      string    `db:"name" json:"name"`
+	Avatar    *string   `db:"avatar" json:"avatar"`
+	Openid    *string   `db:"openid" json:"openid"`
+	Unionid   *string   `db:"unionid" json:"unionid"`
+	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*TbUser, error) {

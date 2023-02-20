@@ -13,42 +13,15 @@ import (
 	"github.com/lightsaid/booking-sys/pkg/app"
 )
 
-type userResponse struct {
-	ID          int64     `json:"id"`
-	RoleID      int64     `json:"role_id"`
-	PhoneNumber string    `json:"phone_number"`
-	Name        string    `son:"name"`
-	Avatar      string    `json:"avatar"`
-	Openid      string    `json:"-"`
-	Unionid     string    `json:"-"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	DeletedAt   time.Time `json:"-"`
-}
-
-func (rsp *userResponse) toUserResponse(user *dbrepo.TbUser) *userResponse {
-	rsp.ID = user.ID
-	rsp.RoleID = user.RoleID
-	rsp.PhoneNumber = user.PhoneNumber
-	rsp.Name = user.Name
-	rsp.Avatar = user.Avatar.String
-	rsp.Openid = user.Openid.String
-	rsp.Unionid = user.Unionid.String
-	rsp.CreatedAt = user.CreatedAt
-	rsp.UpdatedAt = user.UpdatedAt
-	rsp.DeletedAt = user.DeletedAt.Time
-	return rsp
-}
-
 type loginUserRequest struct {
 	PhoneNumber string `json:"phone_number" zh:"手机号码" binding:"required,len=11"`
 	Code        int64  `json:"code" zh:"验证码" binding:"required,min=1000,max=9999"`
 }
 
 type loginUserResponse struct {
-	userResponse
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
+	User         dbrepo.TbUser `json:"user"`
+	AccessToken  string        `json:"access_token"`
+	RefreshToken string        `json:"refresh_token"`
 }
 
 // 公共创建token方法，提供给登录和刷新token
@@ -102,10 +75,8 @@ func (s *Server) loginUser(c *gin.Context) {
 	}
 
 	// 响应
-	var ursp userResponse
-	ursp.toUserResponse(user)
 	response := loginUserResponse{
-		userResponse: *ursp.toUserResponse(user),
+		User:         *user,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}
