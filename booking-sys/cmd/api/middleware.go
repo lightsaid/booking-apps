@@ -82,7 +82,7 @@ func (s *Server) authentication() gin.HandlerFunc {
 			return
 		}
 
-		// 设置上下午
+		// 设置上下文
 		c.Set(AuthorizationPayloadKey, payload)
 
 		c.Next()

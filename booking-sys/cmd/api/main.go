@@ -19,6 +19,9 @@ import (
 
 // @host localhost:5000
 // @BasePath /v1/api
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
 func main() {
 	// 1. 读取配置文件
 	var config settings.AppConfig

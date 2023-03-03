@@ -36,6 +36,15 @@ func (s *Server) pingHandle(c *gin.Context) {
 	c.String(http.StatusOK, "Pong")
 }
 
+// sendSMS godoc
+// @Summary 发送短信验证码
+// @Description 发送短信验证码，如果是开发模式会直接返回验证码
+// @Tags Other
+// @Accept json
+// @Produce json
+// @Param json body main.SMSCode true "手机号"
+// @Success 200 {object} any
+// @Router /sms [post]
 func (s *Server) sendSMS(c *gin.Context) {
 	var req SMSCode
 	if ok := app.BindRequest(c, &req); !ok {

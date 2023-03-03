@@ -31,6 +31,15 @@ func (s *Server) createTheater(c *gin.Context) {
 	app.ToResponse(c, t)
 }
 
+// listTheaters godoc
+// @Summary 电影院列表
+// @Description 根据page_num和page_size返回电影列表
+// @Tags Theaters
+// @Param page_num query int true "第几页"
+// @Param page_size query int true "每页多条"
+// @Security Bearer
+// @Success		200	{object} any
+// @Router /admin/theaters [get]
 func (s *Server) listTheaters(c *gin.Context) {
 	var req pagingRequrest
 	if ok := app.BindRequest(c, &req); !ok {

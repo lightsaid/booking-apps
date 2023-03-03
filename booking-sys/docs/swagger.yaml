@@ -1,4 +1,24 @@
 basePath: /v1/api
+definitions:
+  main.SMSCode:
+    properties:
+      phone_number:
+        type: string
+    required:
+    - phone_number
+    type: object
+  main.loginUserRequest:
+    properties:
+      code:
+        maximum: 9999
+        minimum: 1000
+        type: integer
+      phone_number:
+        type: string
+    required:
+    - code
+    - phone_number
+    type: object
 host: localhost:5000
 info:
   contact: {}
@@ -6,5 +26,74 @@ info:
   termsOfService: https://github.com/lightsaid/booking-apps
   title: Booking System API
   version: "1.0"
-paths: {}
+paths:
+  /admin/theaters:
+    get:
+      description: 根据page_num和page_size返回电影列表
+      parameters:
+      - description: 第几页
+        in: query
+        name: page_num
+        required: true
+        type: integer
+      - description: 每页多条
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+      security:
+      - Bearer: []
+      summary: 电影院列表
+      tags:
+      - Theaters
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: 手机验证码登录
+      parameters:
+      - description: user login param
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/main.loginUserRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: 用户登录
+      tags:
+      - Auth
+  /sms:
+    post:
+      consumes:
+      - application/json
+      description: 发送短信验证码，如果是开发模式会直接返回验证码
+      parameters:
+      - description: 手机号
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/main.SMSCode'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+      summary: 发送短信验证码
+      tags:
+      - Other
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

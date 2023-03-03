@@ -6,6 +6,7 @@ import (
 	"toolkit/errs"
 	"toolkit/jwtutil"
 	"toolkit/mocksms"
+	"toolkit/pswd"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
@@ -13,9 +14,16 @@ import (
 	"github.com/lightsaid/booking-sys/pkg/app"
 )
 
+const (
+	LoginTypeCode = "CODE"
+	LoginTypePass = "PASS"
+)
+
 type loginUserRequest struct {
 	PhoneNumber string `json:"phone_number" zh:"手机号码" binding:"required,len=11"`
-	Code        int64  `json:"code" zh:"验证码" binding:"required,min=1000,max=9999"`
+	Code        int64  `json:"code" zh:"验证码" binding:"-"`
+	Password    string `json:"password" zh:"密码" binding:"-"`
+	LoginType   string `json:"login_type" zh:"登录类型" binding:"required,oneof=CODE PASS"`
 }
 
 type loginUserResponse struct {
@@ -36,6 +44,14 @@ func (s *Server) createToken(uid int64, duration time.Duration) (string, error) 
 	return s.jwt.GenToken(jwtutil.NewJWTPayload(uid, claims))
 }
 
+// loginUser godoc
+// @Summary 用户登录
+// @Description 手机验证码登录
+// @Tags Auth
+// @Accept json
+// @produce json
+// @param json body main.loginUserRequest true "user login param"
+// @Router /auth/login [post]
 func (s *Server) loginUser(c *gin.Context) {
 	var req loginUserRequest
 	if ok := app.BindRequest(c, &req); !ok {
@@ -48,16 +64,31 @@ func (s *Server) loginUser(c *gin.Context) {
 		return
 	}
 
-	if s.config.Server.RunMode == "release" {
-		// TODO: 真实发短信
-		fmt.Println("待实现接入第三方短信接口。")
-	} else {
-		// 验证短信验证码
-		ss, ok := mocksms.GetMockSMS(req.PhoneNumber)
-		if !ok || ss.Code() != req.Code {
-			app.ToErrorResponse(c, errs.InvalidParams.AsMessage("验证码不匹配"))
+	// 验证码登录
+	if req.LoginType == LoginTypeCode {
+		if s.config.Server.RunMode == "release" {
+			// TODO: 真实的短信验证码
+			fmt.Println("待实现接入第三方短信接口。")
+		} else {
+			// 验证短信验证码
+			ss, ok := mocksms.GetMockSMS(req.PhoneNumber)
+			if !ok || ss.Code() != req.Code {
+				app.ToErrorResponse(c, errs.InvalidParams.AsMessage("验证码不匹配"))
+				return
+			}
+		}
+	} else if req.LoginType == LoginTypePass {
+		pass := ""
+		if user.Password != nil {
+			pass = *user.Password
+		}
+		if err := pswd.CheckPassword(req.Password, pass); err != nil {
+			app.ToErrorResponse(c, errs.InvalidParams.AsMessage("密码不匹配"))
 			return
 		}
+	} else {
+		app.ToErrorResponse(c, errs.InvalidParams.AsMessage("登录方式无效"))
+		return
 	}
 
 	// 生成 access token
