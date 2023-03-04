@@ -27,7 +27,7 @@ export default defineConfig({
 	css: {
 		preprocessorOptions: {
 			less: {
-				additionalData: "@import '@/assets/styles/variable.less';",
+				additionalData: "@import '@/assets/styles/index.less';",
 			},
 		},
 	},

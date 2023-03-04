@@ -19,7 +19,10 @@ declare module '@vue/runtime-core' {
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    Index: typeof import('./src/components/layout/Index.vue')['default']
+    Navbar: typeof import('./src/components/layout/components/Navbar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Sidebar: typeof import('./src/components/layout/components/Sidebar.vue')['default']
   }
 }
