@@ -1,4 +1,8 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
+import { useProfileStore } from "@/store"
+import { GetProfile } from "@/api/user"
+import { ProfileKey } from "@/store/profile"
+import storage from "@/utils/storage"
 
 export const routes: RouteRecordRaw[] = [
     {
@@ -15,7 +19,7 @@ export const routes: RouteRecordRaw[] = [
         path: "/",
         component: () => import("@/components/Layout/Basic.vue"),
         redirect: "/dashboard",
-        meta:{
+        meta: {
             title: "Home"
         },
         children: [
@@ -88,7 +92,7 @@ export const routes: RouteRecordRaw[] = [
         meta: {
             authRequired: true,
             title: "电影院管理",
-            icon:"Camera"
+            icon: "Camera"
         },
         children: [
             {
@@ -119,7 +123,7 @@ export const routes: RouteRecordRaw[] = [
         meta: {
             authRequired: true,
             title: "电影管理",
-            icon:"VideoPlay"
+            icon: "VideoPlay"
         },
         children: [
             {
@@ -166,11 +170,29 @@ const router = createRouter({
     },
 });
 
+let isLoadProfile = false
+
 // 路由拦截
-// router.beforeEach((to, from) => {
-// 	if (to.meta.authRequired) {
-// 		// return { name: 'login', query: { redirect: to.fullPath } }
-// 	}
-// })
+router.beforeEach(async (to, from) => {
+    const store = useProfileStore()
+    // 设置用户信息
+    if (!isLoadProfile) {
+        let data = storage.get(ProfileKey)
+        if (data?.access_token) {
+            let res = await GetProfile()
+            let profile: ApiRsp.LoginResult = {
+                user: res.data,
+                access_token: data.access_token,
+                refresh_token: data.refresh_token
+            }
+            store.setProfile(profile)
+            isLoadProfile = true
+        }
+    }
+
+    if (to.meta.authRequired && !store.profile.access_token) {
+        return "/login"
+    }
+})
 
 export default router;

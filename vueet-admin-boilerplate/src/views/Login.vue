@@ -77,14 +77,19 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, h, getCurrentInstance } from 'vue'
-import type { TabsPaneContext, FormInstance } from "element-plus"
+import { reactive, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { TabsPaneContext, FormInstance } from "element-plus"
 import MovieIcon from "@/assets/svgIcon/movie.svg?component"
-
+import { Login } from "../api/user"
+import { SendSMS } from "../api/other"
+import { useProfileStore } from "@/store"
 const smsText = ref('获取验证码')
-const smsStatus = ref(false)
+const smsStatus = ref(true)
 const formRef = ref<FormInstance>()
-const { proxy }: any = getCurrentInstance()
+
+const store = useProfileStore()
+const router = useRouter()
 
 const handleClick = (tab: TabsPaneContext, event: Event) => { }
 
@@ -94,6 +99,21 @@ const loginForm = reactive({
     password: '',
     login_type: 'CODE',
 })
+
+watch(
+    loginForm,
+    ()=>{
+        var re = /^1\d{10}$/
+        if (re.test(loginForm.phone_number)) {
+           smsStatus.value = false
+        }else{
+            smsStatus.value = true
+        }
+    },
+    {
+        immediate: true
+    }
+)
 
 const checkPhone = (rule: any, value: any, callback: any) => {
     if (value === "") {
@@ -108,15 +128,6 @@ const checkPhone = (rule: any, value: any, callback: any) => {
 }
 
 const handleSendSms = () => {
-    if (!loginForm.phone_number) {
-        // proxy.$message({
-        //     message: h("p", null, [
-        //         h("span", null, "温馨提示："),
-        //         h("i", { style: "color: red" }, "请输入手机号")
-        //     ])
-        // })
-        return
-    }
     let count = 60
     smsText.value = `${count}秒后重新获取`
     smsStatus.value = true
@@ -127,24 +138,25 @@ const handleSendSms = () => {
             cur = 0
         }
         smsText.value = `${cur}秒后重新获取`
-        console.log(smsText.value)
         if (count <= 0) {
             smsStatus.value = false
             smsText.value = "获取验证码"
             clearInterval(timer)
         }
     }, 1000)
-}
 
+    SendSMS({phone_number: loginForm.phone_number})
+}
 
 const submitForm = (formEl: FormInstance | undefined) => {
     if (!formEl) return
     formEl.validate((valid) => {
         if (valid) {
-            console.log(loginForm.phone_number);
             localStorage.setItem("login_phone_number", loginForm.phone_number);
-
-            console.log('submit!')
+            Login(loginForm).then(res=>{
+                store.setProfile(res.data)
+                router.replace({path:"/"})
+            })
         } else {
             console.log('error submit!')
             return false
@@ -152,10 +164,6 @@ const submitForm = (formEl: FormInstance | undefined) => {
     })
 }
 
-const resetForm = (formEl: FormInstance | undefined) => {
-    if (!formEl) return
-    formEl.resetFields()
-}
 </script>
 
 <style scoped lang="less">

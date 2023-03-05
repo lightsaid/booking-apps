@@ -9,6 +9,7 @@ import (
 func (s *Server) initRouter() {
 	router := gin.Default()
 	router.Use(s.setTranslations())
+	router.Use(s.setCors())
 	// 注册Swagger文档路由
 	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
@@ -28,6 +29,7 @@ func (s *Server) initRouter() {
 	// admin 管理员模块
 	adminRouter := router.Group("/v1/api/admin").Use(s.authentication())
 	{
+		adminRouter.POST("/profile", s.getProfile)
 		adminRouter.POST("/users", s.createUser)
 		adminRouter.GET("/users", s.getListUsers) // /v1/users?page_num=1&page_size=10
 		adminRouter.PUT("/users/:id", s.updateUser)

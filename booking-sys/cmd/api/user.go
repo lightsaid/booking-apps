@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"toolkit/dberr"
 	"toolkit/errs"
+	"toolkit/jwtutil"
 
 	"github.com/gin-gonic/gin"
 	dbrepo "github.com/lightsaid/booking-sys/dbrepo/postgres"
@@ -64,5 +65,16 @@ func (s *Server) getUserById(c *gin.Context) {
 		return
 	}
 
+	app.ToResponse(c, user)
+}
+
+func (s *Server) getProfile(c *gin.Context) {
+	payload := c.MustGet(AuthorizationPayloadKey).(*jwtutil.JWTPayload)
+	user, err := s.store.GetUser(c, payload.UID)
+	if err != nil {
+		e, _ := dberr.HandleDBError(err)
+		app.ToErrorResponse(c, e)
+		return
+	}
 	app.ToResponse(c, user)
 }
