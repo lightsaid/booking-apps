@@ -16,10 +16,7 @@
 			"path": "toolkit"
 		},
 		{
-			"path": "booking-web"
-		},
-		{
-			"path": "vueet-admin-boilerplate"
+			"path": "vueet-admin"
 		}
 	]
 }
