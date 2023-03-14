@@ -51,7 +51,7 @@ func (s *Server) authentication() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authorizationHeader := c.GetHeader(AuthorizationKey)
 		if len(authorizationHeader) == 0 {
-			app.ToErrorResponse(c, errs.NeedToLogin)
+			app.ToErrorResponse(c, errs.Unauthorized)
 			c.Abort()
 			return
 		}
@@ -61,7 +61,7 @@ func (s *Server) authentication() gin.HandlerFunc {
 		// 以空格分割为两部分
 		parts := strings.Fields(authorizationHeader)
 		if len(parts) < 2 {
-			app.ToErrorResponse(c, errs.UnauthorizedTokenError.AsMessage("Token 格式不匹配"))
+			app.ToErrorResponse(c, errs.Unauthorized.AsMessage("Token 格式不匹配"))
 			c.Abort()
 			return
 		}
@@ -69,7 +69,7 @@ func (s *Server) authentication() gin.HandlerFunc {
 		// 验证accessToken 头
 		authorizationType := strings.ToLower(parts[0])
 		if authorizationType != AuthorizationTypeBearer {
-			app.ToErrorResponse(c, errs.UnauthorizedTokenError.AsMessage("Token 类型不匹配"))
+			app.ToErrorResponse(c, errs.Unauthorized.AsMessage("Token 类型不匹配"))
 			c.Abort()
 			return
 		}
@@ -78,7 +78,7 @@ func (s *Server) authentication() gin.HandlerFunc {
 		accessToken := parts[1]
 		payload, err := s.jwt.ParseToken(accessToken)
 		if err != nil {
-			app.ToErrorResponse(c, errs.UnauthorizedTokenError.AsException(err, err.Error()))
+			app.ToErrorResponse(c, errs.Unauthorized.AsException(err, err.Error()))
 			c.Abort()
 			return
 		}

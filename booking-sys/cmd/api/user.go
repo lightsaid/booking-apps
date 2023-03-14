@@ -54,7 +54,7 @@ func (s *Server) getUserById(c *gin.Context) {
 	str := c.Param("id")
 	id, err := strconv.Atoi(str)
 	if err != nil {
-		app.ToErrorResponse(c, errs.InvalidParams.AsException(err))
+		app.ToErrorResponse(c, errs.BadRequest.AsException(err))
 		return
 	}
 

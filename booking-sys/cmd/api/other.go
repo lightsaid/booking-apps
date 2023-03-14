@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 	"toolkit/mocksms"
@@ -66,5 +67,13 @@ func (s *Server) sendSMS(c *gin.Context) {
 			fmt.Println("get: ", v)
 		}()
 		app.ToResponse(c, sms.Code())
+	}
+}
+
+func (s *Server) uploadFile(c *gin.Context) {
+	log.Println("UploadMaxSize: ", s.config.UploadMaxSize)
+	err := c.Request.ParseMultipartForm(s.config.UploadMaxSize)
+	if err != nil {
+		// return errs
 	}
 }

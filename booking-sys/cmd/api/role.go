@@ -16,7 +16,7 @@ func (s *Server) getListRoles(c *gin.Context) {
 	roles, err := s.store.GetRoles(context.TODO(), dbrepo.GetRolesParams{Limit: 10, Offset: 0})
 	if err != nil {
 		// TODO: handler postgreSQL error
-		e := errs.InvalidParams.AsException(err)
+		e := errs.BadRequest.AsException(err)
 		app.ToErrorResponse(c, e)
 		return
 	}
@@ -28,7 +28,7 @@ func (s *Server) getRoleById(c *gin.Context) {
 	id, err := strconv.Atoi(str)
 	if err != nil {
 		log.Println(err)
-		e := errs.InvalidParams.AsException(err, "id invalid")
+		e := errs.BadRequest.AsException(err, "id invalid")
 		app.ToErrorResponse(c, e)
 		return
 	}

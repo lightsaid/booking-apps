@@ -6,6 +6,7 @@ type AppConfig struct {
 	Database
 	Server
 	JWT
+	App
 }
 
 type Database struct {
@@ -21,4 +22,8 @@ type JWT struct {
 	Secret               string
 	AccessTokenDuration  time.Duration
 	RefreshTokenDuration time.Duration
+}
+
+type App struct {
+	UploadMaxSize int64
 }

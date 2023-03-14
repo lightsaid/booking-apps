@@ -21,17 +21,17 @@
                         <span class="name">LightSaid</span>
                     </div>
                     <div class="navbar-options">
-                        <div>
+                        <div @click="()=>routeHandler('settings')">
                             <el-icon>
                                 <Setting />
                             </el-icon>
-                            <span class="text">{{ t("setting") }}</span>
+                            <span class="text">{{ t("个人设置") }}</span>
                         </div>
-                        <div>
+                        <div @click="()=>routeHandler('login')">
                             <el-icon>
                                 <SwitchButton />
                             </el-icon>
-                            <span class="text">{{ t("logout") }}</span>
+                            <span class="text">{{ t("退出登录") }}</span>
                         </div>
                     </div>
                 </li>
@@ -70,18 +70,34 @@ import Logo from "@/assets/svgicon/movie.svg?component"
 import Translation from "@/assets/svgicon/translate.svg?component"
 import Avatar from "@/assets/imgs/xxx.png"
 import { ref } from "vue"
+import { useRouter } from "vue-router"
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import zhTw from 'element-plus/dist/locale/zh-tw.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
 import { useI18n } from "vue-i18n"
+import { useProfileStore } from "@/store"
+
 const { t } = useI18n()
 const {locale: i18nLocal} = useI18n()
 
 const locale = ref(zhCn)
 const hovering = ref(false)
 
+const router = useRouter()
+const store = useProfileStore()
+
+
 const handleMouseover = () => {
     hovering.value = true
+}
+
+const routeHandler = (name: string) => {
+    if (name === "login") {
+        store.logout()
+        router.replace({name: "login"})
+        return
+    }
+    router.push({name: name})
 }
 
 const changLang = (language: any) => {

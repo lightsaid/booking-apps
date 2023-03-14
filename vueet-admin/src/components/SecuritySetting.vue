@@ -1,7 +1,7 @@
 <template>
     <div class="securitySetting">
         <p class="title">基本设置</p>
-        <p class="todo">Todo</p>
+        <p class="todo">Todo 修改密码之类</p>
     </div>
 </template>
 

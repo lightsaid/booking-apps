@@ -1,4 +1,4 @@
 export default  {
-    setting: "Setting",
-    logout: "Logout"
+    "个人设置": "Setting",
+    "退出登录": "Logout"
 }

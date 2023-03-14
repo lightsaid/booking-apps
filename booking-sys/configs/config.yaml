@@ -11,6 +11,8 @@ JWT:
   AccessTokenDuration: 15m
   RefreshTokenDuration: 168h
 
+App:
+  UploadMaxSize: 4194304  # 4M
 
 
 

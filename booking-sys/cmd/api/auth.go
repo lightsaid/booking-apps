@@ -73,7 +73,7 @@ func (s *Server) loginUser(c *gin.Context) {
 			// 验证短信验证码
 			ss, ok := mocksms.GetMockSMS(req.PhoneNumber)
 			if !ok || ss.Code() != req.Code {
-				app.ToErrorResponse(c, errs.InvalidParams.AsMessage("验证码不匹配"))
+				app.ToErrorResponse(c, errs.BadRequest.AsMessage("验证码不匹配"))
 				return
 			}
 		}
@@ -83,11 +83,11 @@ func (s *Server) loginUser(c *gin.Context) {
 			pass = *user.Password
 		}
 		if err := pswd.CheckPassword(req.Password, pass); err != nil {
-			app.ToErrorResponse(c, errs.InvalidParams.AsMessage("密码不匹配"))
+			app.ToErrorResponse(c, errs.BadRequest.AsMessage("密码不匹配"))
 			return
 		}
 	} else {
-		app.ToErrorResponse(c, errs.InvalidParams.AsMessage("登录方式无效"))
+		app.ToErrorResponse(c, errs.BadRequest.AsMessage("登录方式无效"))
 		return
 	}
 
@@ -126,13 +126,13 @@ type refreshTokenResponse struct {
 func (s *Server) refreshToken(c *gin.Context) {
 	var req refreshTokenRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		app.ToErrorResponse(c, errs.InvalidParams.AsException(err))
+		app.ToErrorResponse(c, errs.BadRequest.AsException(err))
 		return
 	}
 
 	payload, err := s.jwt.ParseToken(req.RefreshToken)
 	if err != nil {
-		app.ToErrorResponse(c, errs.UnauthorizedTokenError.AsException(err, "refresh_token 无效"))
+		app.ToErrorResponse(c, errs.Unauthorized.AsException(err, "refresh_token 无效"))
 		return
 	}
 
