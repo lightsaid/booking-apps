@@ -30,6 +30,7 @@ type Querier interface {
 	GetMovie(ctx context.Context, id int64) (*TbMovie, error)
 	GetPayment(ctx context.Context, id int64) (*TbPayment, error)
 	GetRole(ctx context.Context, id int64) (*TbRole, error)
+	GetRoleByCode(ctx context.Context, code string) (*TbRole, error)
 	GetRoles(ctx context.Context, arg GetRolesParams) ([]*TbRole, error)
 	GetSeat(ctx context.Context, id int64) (*TbSeat, error)
 	GetShowtime(ctx context.Context, id int64) (*TbShowtime, error)
@@ -54,6 +55,7 @@ type Querier interface {
 	UpdateTheater(ctx context.Context, arg UpdateTheaterParams) (*TbTheater, error)
 	UpdateTicket(ctx context.Context, arg UpdateTicketParams) (*TbTicket, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (*TbUser, error)
+	UpdateUserRole(ctx context.Context, arg UpdateUserRoleParams) (*TbUser, error)
 }
 
 var _ Querier = (*Queries)(nil)

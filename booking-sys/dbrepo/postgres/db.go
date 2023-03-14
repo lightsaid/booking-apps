@@ -87,6 +87,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getRoleStmt, err = db.PrepareContext(ctx, GetRole); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRole: %w", err)
 	}
+	if q.getRoleByCodeStmt, err = db.PrepareContext(ctx, GetRoleByCode); err != nil {
+		return nil, fmt.Errorf("error preparing query GetRoleByCode: %w", err)
+	}
 	if q.getRolesStmt, err = db.PrepareContext(ctx, GetRoles); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRoles: %w", err)
 	}
@@ -158,6 +161,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.updateUserStmt, err = db.PrepareContext(ctx, UpdateUser); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateUser: %w", err)
+	}
+	if q.updateUserRoleStmt, err = db.PrepareContext(ctx, UpdateUserRole); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateUserRole: %w", err)
 	}
 	return &q, nil
 }
@@ -267,6 +273,11 @@ func (q *Queries) Close() error {
 	if q.getRoleStmt != nil {
 		if cerr := q.getRoleStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getRoleStmt: %w", cerr)
+		}
+	}
+	if q.getRoleByCodeStmt != nil {
+		if cerr := q.getRoleByCodeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getRoleByCodeStmt: %w", cerr)
 		}
 	}
 	if q.getRolesStmt != nil {
@@ -389,6 +400,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updateUserStmt: %w", cerr)
 		}
 	}
+	if q.updateUserRoleStmt != nil {
+		if cerr := q.updateUserRoleStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateUserRoleStmt: %w", cerr)
+		}
+	}
 	return err
 }
 
@@ -449,6 +465,7 @@ type Queries struct {
 	getMovieStmt       *sql.Stmt
 	getPaymentStmt     *sql.Stmt
 	getRoleStmt        *sql.Stmt
+	getRoleByCodeStmt  *sql.Stmt
 	getRolesStmt       *sql.Stmt
 	getSeatStmt        *sql.Stmt
 	getShowtimeStmt    *sql.Stmt
@@ -473,6 +490,7 @@ type Queries struct {
 	updateTheaterStmt  *sql.Stmt
 	updateTicketStmt   *sql.Stmt
 	updateUserStmt     *sql.Stmt
+	updateUserRoleStmt *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -500,6 +518,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getMovieStmt:       q.getMovieStmt,
 		getPaymentStmt:     q.getPaymentStmt,
 		getRoleStmt:        q.getRoleStmt,
+		getRoleByCodeStmt:  q.getRoleByCodeStmt,
 		getRolesStmt:       q.getRolesStmt,
 		getSeatStmt:        q.getSeatStmt,
 		getShowtimeStmt:    q.getShowtimeStmt,
@@ -524,5 +543,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		updateTheaterStmt:  q.updateTheaterStmt,
 		updateTicketStmt:   q.updateTicketStmt,
 		updateUserStmt:     q.updateUserStmt,
+		updateUserRoleStmt: q.updateUserRoleStmt,
 	}
 }

@@ -20,7 +20,7 @@ const offsetHeight = ref<number>(300)
 watch(basicRef, ()=> {
     if (basicRef.value) {
         nextTick(()=>{
-            offsetHeight.value = basicRef.value.$el.offsetHeight
+            offsetHeight.value = basicRef.value.$el.offsetHeight + 20
         })
     }
 }, {immediate: true})

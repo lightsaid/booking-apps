@@ -37,7 +37,7 @@ func bind(c *gin.Context, err error) bool {
 	// 断言错误是否为 validator/v10 的验证错误信息
 	verrs, ok := err.(validator.ValidationErrors)
 	if !ok { // 其他方面的参数不匹配
-		ToErrorResponse(c, errs.InvalidParams.AsException(err))
+		ToErrorResponse(c, errs.BadRequest.AsException(err))
 		return false
 	}
 
@@ -55,7 +55,7 @@ func bind(c *gin.Context, err error) bool {
 		index++
 	}
 
-	ToErrorResponse(c, errs.InvalidParams.AsException(err, msg))
+	ToErrorResponse(c, errs.BadRequest.AsException(err, msg))
 
 	return false
 }

@@ -25,5 +25,6 @@ type JWT struct {
 }
 
 type App struct {
-	UploadMaxSize int64
+	UploadMaxSize  int64
+	UploadSavePath string
 }

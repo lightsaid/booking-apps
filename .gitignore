@@ -20,6 +20,8 @@
 # docker 存储databas数据
 docker/database
 
+/booking-sys/storage/uploads
+
 
 # 前端忽略文件
 /booking-web/node_modules

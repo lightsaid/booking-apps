@@ -19,6 +19,9 @@ func (s *Server) initRouter() {
 	// 发送短信
 	router.POST("/v1/api/sms", s.sendSMS)
 
+	// 静态资源访问
+	router.Static("/storage/uploads", "./storage/uploads")
+
 	// auth 登录/认证模块
 	authRouter := router.Group("/v1/api/auth")
 	{
@@ -29,10 +32,13 @@ func (s *Server) initRouter() {
 	// admin 管理员模块
 	adminRouter := router.Group("/v1/api/admin").Use(s.authentication())
 	{
+		// 上传文件
+		adminRouter.POST("/uploadFiles", s.uploadFiles).Use(s.authentication())
+
 		adminRouter.POST("/profile", s.getProfile)
 		adminRouter.POST("/users", s.createUser)
 		adminRouter.GET("/users", s.getListUsers) // /v1/users?page_num=1&page_size=10
-		adminRouter.PUT("/users/:id", s.updateUser)
+		adminRouter.POST("/users/:id", s.updateUser)
 		adminRouter.GET("/users/:id", s.getUserById)
 
 		adminRouter.GET("/roles", s.getListRoles)

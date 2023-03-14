@@ -12,9 +12,12 @@
                 <el-switch v-model="ruleForm.role" />
             </el-form-item>
             <el-form-item label="头像" prop="avatar">
-                <el-upload class="avatar-uploader" accept="image/png, image/jpg, image/jpeg" action="/upload" :show-file-list="false"
+                <el-upload class="avatar-uploader" name="files" :limit="1" accept="image/png, image/jpg, image/jpeg" 
+                    multiple :action="uploadurl" :show-file-list="false"
+                    :headers='{"Authorization": `Bearer ${token}`}'
+                    :on-error="handleOnerror"
                     :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
-                    <img v-if="ruleForm.avatar" :src="ruleForm.avatar" class="avatar" />
+                    <img v-if="ruleForm.avatar" :src="fileurl + ruleForm.avatar" class="avatar" />
                     <el-icon v-else class="avatar-uploader-icon">
                         <Plus />
                     </el-icon>
@@ -33,14 +36,22 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import type { UploadProps } from 'element-plus'
-import { GetProfile } from '@/api/user'
+import { GetProfile, UpdateUser } from '@/api/user'
 import { GetRoleById } from "@/api/other"
-
+import { ProfileKey } from "@/store/profile"
+import storage from "@/utils/storage"
 const AdminCode = "ADMIN"
+
+const uploadurl = import.meta.env.VITE_UPLOAD_URL
+const fileurl = import.meta.env.VITE_FILE_URL
+
+const token = storage.get(ProfileKey)?.access_token
+console.log(token)
 
 const formSize = ref('default')
 const ruleFormRef = ref<FormInstance>()
 const ruleForm = reactive({
+    id: 0,
     name: '',
     phone_number: "",
     role: false,
@@ -51,9 +62,11 @@ const imageUrl = ref('')
 
 onMounted(()=>{
     GetProfile().then(res=>{
+        ruleForm.id = res.data.id
         ruleForm.name = res.data.name
         ruleForm.phone_number = res.data.phone_number
         ruleForm.avatar = res.data.avatar || ""
+        imageUrl.value = res.data.avatar || ""
         // 查询是否是管理员
         GetRoleById(res.data.role_id).then(res=>{
             ruleForm.role = res.data.code === AdminCode
@@ -66,17 +79,29 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (
     uploadFile
 ) => {
     ruleForm.avatar = URL.createObjectURL(uploadFile.raw!)
+    let { data } = response
+    imageUrl.value = data[0] || ruleForm.avatar
 }
 
 const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
-    if (rawFile.type !== 'image/jpeg') {
+    let allowTypes = ['image/jpeg', 'image/jpg', 'image/png']
+    if (!allowTypes.includes(rawFile.type)) {
         ElMessage.error('Avatar picture must be JPG format!')
         return false
     } else if (rawFile.size / 1024 / 1024 > 2) {
-        ElMessage.error('Avatar picture size can not exceed 2MB!')
+        ElMessage.error('头像大小不能超过 2MB')
         return false
     }
     return true
+}
+
+const handleOnerror = (error: Error) => {
+    try{
+        let data = JSON.parse(error.message)
+        ElMessage.error(data.msg)
+    }catch(error) {
+        ElMessage.error("上传失败")
+    }
 }
 
 const rules = reactive<FormRules>({
@@ -90,22 +115,19 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     if (!formEl) return
     await formEl.validate((valid, fields) => {
         if (valid) {
-            console.log('submit!')
+            const { id }  = ruleForm
+            if (imageUrl.value[0] == ".") {
+                imageUrl.value = imageUrl.value.substring(1)
+            }
+            UpdateUser(id, {...ruleForm, avatar: imageUrl.value} ).then(res=>{
+                ElMessage.success(res.msg)
+            })
         } else {
             console.log('error submit!', fields)
         }
     })
 }
 
-const resetForm = (formEl: FormInstance | undefined) => {
-    if (!formEl) return
-    formEl.resetFields()
-}
-
-const options = Array.from({ length: 10000 }).map((_, idx) => ({
-    value: `${idx + 1}`,
-    label: `${idx + 1}`,
-}))
 </script>
 
 <style scoped lang="less">

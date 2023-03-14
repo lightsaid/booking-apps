@@ -36,3 +36,10 @@ RETURNING *;
 -- name: GetUserByPhone :one
 SELECT * FROM tb_users WHERE phone_number = $1 LIMIT 1;
 
+-- name: UpdateUserRole :one
+UPDATE tb_users 
+SET 
+    role_id = $2,
+    updated_at = $3
+WHERE id = $1 AND deleted_at IS NULL
+RETURNING *;

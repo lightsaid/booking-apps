@@ -20,7 +20,8 @@ declare namespace ApiRsp {
         login_type: string,
         code: number | string,
         password: string
-    }
+    } 
+
     type UserResult = {
         id: number,
         avatar: string | null 

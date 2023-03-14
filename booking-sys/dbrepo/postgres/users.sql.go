@@ -226,3 +226,37 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*TbUser
 	)
 	return &i, err
 }
+
+const UpdateUserRole = `-- name: UpdateUserRole :one
+UPDATE tb_users 
+SET 
+    role_id = $2,
+    updated_at = $3
+WHERE id = $1 AND deleted_at IS NULL
+RETURNING id, role_id, phone_number, password, name, avatar, openid, unionid, created_at, updated_at, deleted_at
+`
+
+type UpdateUserRoleParams struct {
+	ID        int64     `json:"id"`
+	RoleID    int64     `json:"role_id"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (q *Queries) UpdateUserRole(ctx context.Context, arg UpdateUserRoleParams) (*TbUser, error) {
+	row := q.queryRow(ctx, q.updateUserRoleStmt, UpdateUserRole, arg.ID, arg.RoleID, arg.UpdatedAt)
+	var i TbUser
+	err := row.Scan(
+		&i.ID,
+		&i.RoleID,
+		&i.PhoneNumber,
+		&i.Password,
+		&i.Name,
+		&i.Avatar,
+		&i.Openid,
+		&i.Unionid,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return &i, err
+}

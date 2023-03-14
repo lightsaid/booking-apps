@@ -13,6 +13,7 @@ JWT:
 
 App:
   UploadMaxSize: 4194304  # 4M
+  UploadSavePath: ./storage/uploads
 
 
 

@@ -18,6 +18,8 @@ func HandleDBError(err error) (apperr *errs.AppError, sendEmail bool) {
 		return errs.Success, false
 	}
 
+	log.Println("dberror: ", err.Error())
+
 	if err == sql.ErrNoRows {
 		return errs.NotFound, false
 	}
@@ -31,13 +33,13 @@ func HandleDBError(err error) (apperr *errs.AppError, sendEmail bool) {
 		case "23505":
 			// 对应数据库各种唯一键约束
 			if strings.Contains(err.Error(), "tb_roles_code_idx") {
-				return errs.InvalidParams.AsException(err, "code 已存在"), false
+				return errs.BadRequest.AsException(err, "code 已存在"), false
 			}
 			if strings.Contains(err.Error(), "tb_users_phone_number_idx") {
-				return errs.InvalidParams.AsException(err, "手机号码 已存在"), false
+				return errs.BadRequest.AsException(err, "手机号码 已存在"), false
 			}
 			// TODO: ...
-			return errs.InvalidParams.AsException(err, "记录已存在"), false
+			return errs.BadRequest.AsException(err, "记录已存在"), false
 		default:
 			// 数据库无法处理请求参数/实体
 			return errs.UnprocessableEntity.AsException(err), false
