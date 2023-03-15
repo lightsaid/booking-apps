@@ -61,6 +61,7 @@ func (s *Server) initRouter() {
 		adminRouter.GET("/seats/:id", s.getSeat)
 		adminRouter.PUT("/seats/:id", s.updateSeat)
 		adminRouter.DELETE("/seats/:id", s.delSeat)
+		adminRouter.POST("/seats/batch", s.batchInsertSeats)
 
 		adminRouter.POST("/movies", s.createMovie)
 		adminRouter.GET("/movies", s.listMovies)

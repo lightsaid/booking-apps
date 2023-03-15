@@ -112,6 +112,8 @@ CREATE INDEX ON "tb_halls" ("theater_id");
 
 CREATE INDEX ON "tb_seats" ("hall_id");
 
+CREATE UNIQUE INDEX ON "tb_seats" ("hall_id", "col_number", "row_number");
+
 CREATE INDEX ON "tb_showtimes" ("movie_id");
 
 CREATE INDEX ON "tb_showtimes" ("hall_id");

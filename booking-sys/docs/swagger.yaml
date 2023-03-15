@@ -7,16 +7,23 @@ definitions:
     required:
     - phone_number
     type: object
+  main.batchInsertSeatsRequest:
+    type: object
   main.loginUserRequest:
     properties:
       code:
-        maximum: 9999
-        minimum: 1000
         type: integer
+      login_type:
+        enum:
+        - CODE
+        - PASS
+        type: string
+      password:
+        type: string
       phone_number:
         type: string
     required:
-    - code
+    - login_type
     - phone_number
     type: object
 host: localhost:5000
@@ -27,6 +34,28 @@ info:
   title: Booking System API
   version: "1.0"
 paths:
+  /admin/seats/batch:
+    post:
+      consumes:
+      - application/json
+      description: 批量插入座位表
+      parameters:
+      - description: seats batch insert param
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/main.batchInsertSeatsRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+      security:
+      - Bearer: []
+      summary: 批量插入座位表
+      tags:
+      - Theaters
   /admin/theaters:
     get:
       description: 根据page_num和page_size返回电影列表

@@ -42,9 +42,27 @@
 ```
 参考：https://github.com/kyleconroy/sqlc/pull/1571
 
-这是是一个功能性缺陷问题，还有待sqlc解决，已PR提交。。。
+这是是一个功能性缺陷问题，还有待sqlc解决，已有PR提交。。。
 
 
 ### 构思接口
 基础表的CRUD
 
+### 影院模块构思
+
+电影院有大厅，每个大厅有对应的座位，先假设每一个大厅都是
+10 x 10 的座位，那么即得100个位置。
+
+因此创建座位的接口入参
+``` json
+[
+    {"row_number": 1, "col_number": 1, "status": "A", "hall_id": 1},
+    {"row_number": 11, "col_number": 11, "status": "A", "hall_id": 1},
+]
+```
+sqlc 如何实现批量插入
+参考
+https://medium.com/@amoghagarwal/insert-optimisations-in-golang-26884b183b35
+
+
+### 

@@ -4,6 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
+
+	"github.com/lib/pq"
 )
 
 // Store 定义CRUD接口，结合 sqlc 生成的和自己实现的
@@ -12,6 +15,8 @@ type Store interface {
 
 	// TEST:
 	TestRoleTx(ctx context.Context) (int64, error)
+
+	BatchInsertSeats(context.Context, []*CreateSeatParams) error
 }
 
 // SQLStore SQLStore 结构体是对 sqlc 生成代码进行封装和组合，实现自定义操作DB句柄、执行事务
@@ -30,6 +35,7 @@ func NewStore(db *sql.DB) Store {
 
 // execTx 执行事务公共方法
 func (store *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) error {
+	t := time.Now()
 	// 开启事务
 	tx, err := store.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -47,7 +53,7 @@ func (store *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) erro
 		}
 		return err
 	}
-
+	fmt.Println("执行事务花费时间： ", time.Since(t))
 	return tx.Commit()
 }
 
@@ -67,4 +73,33 @@ func (store *SQLStore) TestRoleTx(ctx context.Context) (int64, error) {
 	})
 
 	return id, err
+}
+
+func (store *SQLStore) BatchInsertSeats(ctx context.Context, rows []*CreateSeatParams) error {
+	err := store.execTx(ctx, func(q *Queries) error {
+		stmt, err := q.db.PrepareContext(ctx, pq.CopyIn("tb_seats", "hall_id", "row_number", "col_number", "status"))
+		if err != nil {
+			return err
+		}
+
+		for _, row := range rows {
+			_, err := stmt.Exec(row.HallID, row.RowNumber, row.ColNumber, row.Status)
+			if err != nil {
+				return err
+			}
+		}
+
+		_, err = stmt.Exec()
+		if err != nil {
+			return err
+		}
+
+		err = stmt.Close()
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+	return err
 }

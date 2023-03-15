@@ -8,7 +8,7 @@ Server:
   LogOutput: ./storage/logs/access.log
 JWT:
   Secret: booking-apps#Author@lightsaid
-  AccessTokenDuration: 15m
+  AccessTokenDuration: 15000m
   RefreshTokenDuration: 168h
 
 App:

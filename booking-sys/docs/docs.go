@@ -16,6 +16,42 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/admin/seats/batch": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "批量插入座位表",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Theaters"
+                ],
+                "summary": "批量插入座位表",
+                "parameters": [
+                    {
+                        "description": "seats batch insert param",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.batchInsertSeatsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/theaters": {
             "get": {
                 "security": [
@@ -128,17 +164,28 @@ const docTemplate = `{
                 }
             }
         },
+        "main.batchInsertSeatsRequest": {
+            "type": "object"
+        },
         "main.loginUserRequest": {
             "type": "object",
             "required": [
-                "code",
+                "login_type",
                 "phone_number"
             ],
             "properties": {
                 "code": {
-                    "type": "integer",
-                    "maximum": 9999,
-                    "minimum": 1000
+                    "type": "integer"
+                },
+                "login_type": {
+                    "type": "string",
+                    "enum": [
+                        "CODE",
+                        "PASS"
+                    ]
+                },
+                "password": {
+                    "type": "string"
                 },
                 "phone_number": {
                     "type": "string"

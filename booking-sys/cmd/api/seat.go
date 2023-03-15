@@ -2,6 +2,7 @@ package main
 
 import (
 	"toolkit/dberr"
+	"toolkit/errs"
 
 	"github.com/gin-gonic/gin"
 	dbrepo "github.com/lightsaid/booking-sys/dbrepo/postgres"
@@ -105,6 +106,32 @@ func (s *Server) delSeat(c *gin.Context) {
 	if err != nil {
 		e, _ := dberr.HandleDBError(err)
 		app.ToErrorResponse(c, e)
+		return
+	}
+	app.ToResponse(c, nil)
+}
+
+type batchInsertSeatsRequest struct {
+	Data []*dbrepo.CreateSeatParams `json:"data" binding:"required"`
+}
+
+// batchInsertSeats godoc
+// @Summary 批量插入座位表
+// @Description 批量插入座位表
+// @Tags Theaters
+// @Accept json
+// @param json body main.batchInsertSeatsRequest true "seats batch insert param"
+// @Security Bearer
+// @Success		200	{object} any
+// @Router /admin/seats/batch [post]
+func (s *Server) batchInsertSeats(c *gin.Context) {
+	var req batchInsertSeatsRequest
+	if ok := app.BindRequest(c, &req); !ok {
+		return
+	}
+	err := s.store.BatchInsertSeats(c.Request.Context(), req.Data)
+	if err != nil {
+		app.ToErrorResponse(c, errs.ServerError.AsException(err))
 		return
 	}
 	app.ToResponse(c, nil)
