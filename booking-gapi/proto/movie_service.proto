@@ -1,0 +1,26 @@
+syntax="proto3";
+
+option go_package="./pb;pb";
+
+import "movie_message.proto";
+import "common_message.proto";
+
+message ListMovieRequest {
+    Pagation pager = 1;
+}
+
+message ListMovieResponse {
+    Movie movies = 1;
+}
+
+message GetMovieRequest {
+    int64 id = 1;
+}
+message GetMovieResponse {
+    Movie movie = 1;
+}
+
+service MovieService {
+    rpc ListMovie(ListMovieRequest) returns (stream ListMovieResponse);
+    rpc GetMovie(GetMovieRequest) returns (GetMovieResponse);
+}

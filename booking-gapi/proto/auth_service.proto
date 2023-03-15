@@ -1,0 +1,33 @@
+syntax="proto3";
+
+option go_package="./pb;pb";
+
+import "user_message.proto";
+import "google/protobuf/wrappers.proto";
+
+message RegisterRequest {
+    string phone_number = 1;
+    int32 code = 2;
+}
+
+message RegisterResponse {
+    User user = 1;
+}
+
+message LoginRequest {
+    string phone_number = 1;
+    int32 code = 2;
+}
+
+message LoginResponse {
+    User user = 1;
+    string access_token = 2;
+    string refresh_token = 3;
+}
+
+service AuthService {
+    rpc Register(RegisterRequest) returns (RegisterResponse);
+    rpc Login(LoginRequest) returns (LoginResponse);
+    rpc Refresh(google.protobuf.StringValue) returns (google.protobuf.StringValue);
+}
+

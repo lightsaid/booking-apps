@@ -1,0 +1,24 @@
+syntax="proto3";
+
+option go_package="./pb;pb";
+
+import "user_message.proto";
+import "google/protobuf/empty.proto";
+
+message GetProfileResponse {
+    User user = 1;
+}
+
+message UpdateProfileRequest {
+    string name = 1;
+    string avatar = 2;
+}
+
+message UpdateProfileResponse {
+    User user = 1;
+}
+
+service UserService {
+    rpc GetProfile(google.protobuf.Empty) returns (GetProfileResponse);
+    rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
+}

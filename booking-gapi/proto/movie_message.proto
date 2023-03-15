@@ -1,0 +1,37 @@
+syntax="proto3";
+
+option go_package="./pb;pb";
+
+import "google/protobuf/timestamp.proto";
+
+message Movie{
+    int64 id = 1;
+    string title = 2;
+    google.protobuf.Timestamp release_date = 3;
+    string director = 4;
+    string poster = 5;
+    int32 duration = 6;
+    string genre = 7;
+    string star = 8;
+    string description = 9;
+}
+
+// type TbMovie struct {
+// 	ID          int64     `json:"id"`
+// 	Title       string    `json:"title"`
+// 	ReleaseDate time.Time `json:"release_date"`
+// 	// 导演
+// 	Director string `json:"director"`
+// 	// 海报/封面
+// 	Poster string `json:"poster"`
+// 	// 时长，单位: 分钟
+// 	Duration int32 `json:"duration"`
+// 	// 类型
+// 	Genre *string `json:"genre"`
+// 	// 主演
+// 	Star        *string    `json:"star"`
+// 	Description *string    `json:"description"`
+// 	CreatedAt   time.Time  `json:"created_at"`
+// 	UpdatedAt   time.Time  `json:"updated_at"`
+// 	DeletedAt   *time.Time `json:"deleted_at"`
+// }
