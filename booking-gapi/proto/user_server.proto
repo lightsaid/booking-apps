@@ -10,8 +10,9 @@ message GetProfileResponse {
 }
 
 message UpdateProfileRequest {
-    string name = 1;
-    string avatar = 2;
+    int64 id = 1;
+    string name = 2;
+    string avatar = 3;
 }
 
 message UpdateProfileResponse {

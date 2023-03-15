@@ -3,7 +3,7 @@
 //   sqlc v1.16.0
 // source: user.sql
 
-package dbrepo
+package db
 
 import (
 	"context"

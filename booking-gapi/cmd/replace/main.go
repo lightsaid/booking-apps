@@ -14,10 +14,10 @@ import (
 // 这个程序时为了解决 sqlc 生成的代码后，将 sql.NullXXX 类型转换为 *XXX
 
 // go run ./cmd/replace_null/*.go
-// goimports -w ./dbrepo/postgres
+// goimports -w ./db/postgres
 func main() {
 	var dirpath string
-	flag.StringVar(&dirpath, "path", "./dbrepo/postgres", "需要替换sql.NullXXX的文件目录")
+	flag.StringVar(&dirpath, "path", "./db/postgres", "需要替换sql.NullXXX的文件目录")
 	flag.Parse()
 	files, err := os.ReadDir(dirpath)
 	if err != nil {

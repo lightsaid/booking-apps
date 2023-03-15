@@ -10,7 +10,7 @@ client:
 ## replace: 替换sql.NullXXX 为指针类型
 replace:
 	go run ./cmd/replace/*.go
-	goimports -w ./dbrepo/postgres
+	goimports -w ./db/postgres
 
 ## sqlc: 使用 sqlc generate 生成代码
 sqlc:
