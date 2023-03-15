@@ -19,8 +19,17 @@ type UserServer struct {
 }
 
 func (srv *UserServer) GetProfile(ctx context.Context, tmp *emptypb.Empty) (*pb.GetProfileResponse, error) {
-	// TODO：
-	rsp := &pb.GetProfileResponse{User: &pb.User{Id: 1, Name: "张三", PhoneNumber: "18765432101"}}
+	// TODO： 从ctx获取id
+	var uid int64 = 1
+	user, err := srv.store.GetUser(ctx, uid)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, status.Errorf(codes.NotFound, "用户不存在")
+		}
+		return nil, status.Errorf(codes.Internal, "查询用户失败")
+	}
+
+	rsp := &pb.GetProfileResponse{User: &pb.User{Id: user.ID, Name: user.Name, PhoneNumber: user.PhoneNumber, Avatar: *user.Avatar}}
 	return rsp, nil
 }
 

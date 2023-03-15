@@ -17,3 +17,6 @@ SET
     updated_at = $6
 WHERE id = $1 AND deleted_at IS NULL
 RETURNING *;
+
+-- name: GetUserByPhone :one
+SELECT * FROM tb_users WHERE phone_number = $1 AND deleted_at IS NULL LIMIT 1;

@@ -10,7 +10,7 @@ message ListMovieRequest {
 }
 
 message ListMovieResponse {
-    Movie movies = 1;
+    Movie movie = 1;
 }
 
 message GetMovieRequest {
