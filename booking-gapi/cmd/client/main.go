@@ -80,10 +80,11 @@ func loginUser(client pb.AuthServiceClient, smsClient pb.SMSServiceClient) {
 	log.Println("登录成功：", string(buf))
 }
 
-func fatalOnerror(err error, msg string) {
-	if err != nil {
-		log.Fatalf("%s: %s", msg, err.Error())
-	}
+func getProfile(client pb.UserServiceClient) {
+	log.Println(">>>>>>>> TEST getProfile >>>>>>>")
+	// ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	// defer cancel()
+	// client.GetProfile(ctx, )
 }
 
 func listMovie(client pb.MovieServiceClient) {
@@ -123,4 +124,10 @@ func getMovie(client pb.MovieServiceClient) {
 
 	buf, _ := json.MarshalIndent(resp, "", " ")
 	log.Println(string(buf))
+}
+
+func fatalOnerror(err error, msg string) {
+	if err != nil {
+		log.Fatalf("%s: %s", msg, err.Error())
+	}
 }

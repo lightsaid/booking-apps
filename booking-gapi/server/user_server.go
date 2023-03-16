@@ -23,8 +23,10 @@ func NewUserServer(store db.Store) *UserServer {
 }
 
 func (srv *UserServer) GetProfile(ctx context.Context, tmp *emptypb.Empty) (*pb.GetProfileResponse, error) {
-	// TODO： 从ctx获取id
-	var uid int64 = 1
+	uid := ctx.Value(ContextKey("user_id")).(int64)
+	if uid <= 0 {
+		return nil, status.Errorf(codes.NotFound, "用户id不存在")
+	}
 	user, err := srv.store.GetUser(ctx, uid)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -38,7 +40,10 @@ func (srv *UserServer) GetProfile(ctx context.Context, tmp *emptypb.Empty) (*pb.
 }
 
 func (srv *UserServer) UpdateProfile(ctx context.Context, req *pb.UpdateProfileRequest) (*pb.UpdateProfileResponse, error) {
-	// TODO: validator input
+	uid := ctx.Value(ContextKey("user_id")).(int64)
+	if uid <= 0 {
+		return nil, status.Errorf(codes.NotFound, "用户id不存在")
+	}
 	user, err := srv.store.GetUser(ctx, req.Id)
 	if err != nil {
 		log.Println("GetUser failed ", err)
@@ -67,6 +72,12 @@ func (srv *UserServer) UpdateProfile(ctx context.Context, req *pb.UpdateProfileR
 	if err != nil {
 		log.Println("UpdateUser failed ", err)
 		status.Errorf(codes.Internal, "更新失败")
+	}
+	if user.RoleID == nil {
+		*user.RoleID = 0
+	}
+	if user.Avatar == nil {
+		*user.Avatar = ""
 	}
 	rsp := pb.UpdateProfileResponse{User: &pb.User{
 		Id:          user.ID,
