@@ -23,10 +23,11 @@ func NewUserServer(store db.Store) *UserServer {
 }
 
 func (srv *UserServer) GetProfile(ctx context.Context, tmp *emptypb.Empty) (*pb.GetProfileResponse, error) {
-	uid := ctx.Value(ContextKey("user_id")).(int64)
-	if uid <= 0 {
-		return nil, status.Errorf(codes.NotFound, "用户id不存在")
+	uid, ok := ctx.Value(ContextKey("user_id")).(int64)
+	if !ok || uid <= 0 {
+		return nil, status.Errorf(codes.NotFound, "用户id不存在:%d、%b", uid, ok)
 	}
+
 	user, err := srv.store.GetUser(ctx, uid)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -35,15 +36,23 @@ func (srv *UserServer) GetProfile(ctx context.Context, tmp *emptypb.Empty) (*pb.
 		return nil, status.Errorf(codes.Internal, "查询用户失败")
 	}
 
-	rsp := &pb.GetProfileResponse{User: &pb.User{Id: user.ID, Name: user.Name, PhoneNumber: user.PhoneNumber, Avatar: *user.Avatar}}
+	if user.Avatar == nil {
+		user.Avatar = new(string)
+	}
+	if user.RoleID == nil {
+		user.RoleID = new(int64)
+	}
+	rsp := &pb.GetProfileResponse{
+		User: &pb.User{Id: user.ID, Name: user.Name, PhoneNumber: user.PhoneNumber, Avatar: *user.Avatar}}
 	return rsp, nil
 }
 
 func (srv *UserServer) UpdateProfile(ctx context.Context, req *pb.UpdateProfileRequest) (*pb.UpdateProfileResponse, error) {
-	uid := ctx.Value(ContextKey("user_id")).(int64)
-	if uid <= 0 {
-		return nil, status.Errorf(codes.NotFound, "用户id不存在")
+	uid, ok := ctx.Value(ContextKey("user_id")).(int64)
+	if !ok || uid <= 0 {
+		return nil, status.Errorf(codes.NotFound, "用户id不存在:%d、%b", uid, ok)
 	}
+	req.Id = uid
 	user, err := srv.store.GetUser(ctx, req.Id)
 	if err != nil {
 		log.Println("GetUser failed ", err)
@@ -61,6 +70,12 @@ func (srv *UserServer) UpdateProfile(ctx context.Context, req *pb.UpdateProfileR
 		user.Avatar = &req.Avatar
 	}
 
+	if user.Avatar == nil {
+		user.Avatar = new(string)
+	}
+	if user.RoleID == nil {
+		user.RoleID = new(int64)
+	}
 	user, err = srv.store.UpdateUser(ctx, db.UpdateUserParams{
 		ID:        user.ID,
 		Name:      user.Name,
@@ -76,9 +91,7 @@ func (srv *UserServer) UpdateProfile(ctx context.Context, req *pb.UpdateProfileR
 	if user.RoleID == nil {
 		*user.RoleID = 0
 	}
-	if user.Avatar == nil {
-		*user.Avatar = ""
-	}
+
 	rsp := pb.UpdateProfileResponse{User: &pb.User{
 		Id:          user.ID,
 		RoleId:      *user.RoleID,

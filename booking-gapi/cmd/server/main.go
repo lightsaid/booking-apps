@@ -41,7 +41,16 @@ func main() {
 	fatalOnerror(err, "net.Listen")
 	defer lis.Close()
 
-	srv := grpc.NewServer()
+	var authFullMethods = map[string]bool{
+		"/UserService/GetProfile":    true,
+		"/UserService/UpdateProfile": true,
+	}
+	interceptor := server.NewRPCInterceptor(jwtMaker, authFullMethods)
+
+	srv := grpc.NewServer(
+		grpc.UnaryInterceptor(interceptor.Unary()),
+		grpc.StreamInterceptor(interceptor.Stream()),
+	)
 	pb.RegisterAuthServiceServer(srv, authServer)
 	pb.RegisterUserServiceServer(srv, userServer)
 	pb.RegisterMovieServiceServer(srv, movieServer)

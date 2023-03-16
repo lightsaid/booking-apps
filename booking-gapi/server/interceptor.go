@@ -20,7 +20,7 @@ type ContextKey string
 
 type RPCInterceptor struct {
 	maker         *jwtutil.Maker
-	authResources map[string]bool // authResources 包含需要登录授权才能访问的资源，不管true还是false
+	authResources map[string]bool // authResources 包含需要登录授权才能访问的资源
 }
 
 func NewRPCInterceptor(maker *jwtutil.Maker, resources map[string]bool) *RPCInterceptor {
