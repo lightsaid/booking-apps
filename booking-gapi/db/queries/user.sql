@@ -1,8 +1,9 @@
 -- name: CreateUser :one
 INSERT INTO tb_users (
     phone_number,
-    name
-) VALUES($1, $2) RETURNING *;
+    name,
+    role_id
+) VALUES($1, $2, 2) RETURNING *;
 
 -- name: GetUser :one
 SELECT * FROM tb_users WHERE id = $1 AND deleted_at IS NULL LIMIT 1;

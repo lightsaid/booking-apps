@@ -118,7 +118,7 @@ func (s *Server) updateUser(c *gin.Context) {
 		}
 	}
 
-	_, err = s.store.UpdateUserRole(c.Request.Context(), dbrepo.UpdateUserRoleParams{ID: user.ID, RoleID: role.ID, UpdatedAt: time.Now()})
+	_, err = s.store.UpdateUserRole(c.Request.Context(), dbrepo.UpdateUserRoleParams{ID: user.ID, RoleID: &role.ID, UpdatedAt: time.Now()})
 	if err != nil {
 		e, _ := dberr.HandleDBError(err)
 		app.ToErrorResponse(c, e)

@@ -3,6 +3,9 @@ module github.com/lightsaid/booking-gapi
 go 1.19
 
 require (
+	github.com/gofrs/uuid v4.4.0+incompatible
+	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/gomodule/redigo v1.8.9
 	github.com/lib/pq v1.10.7
 	google.golang.org/grpc v1.53.0
 	google.golang.org/protobuf v1.29.1

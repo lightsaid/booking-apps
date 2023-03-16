@@ -1,0 +1,13 @@
+syntax="proto3";
+
+option go_package="./pb;pb";
+import "google/protobuf/wrappers.proto";
+
+
+message SendResponse {
+    int32 code = 1;
+}
+
+service SMSService{
+    rpc Send(google.protobuf.StringValue) returns (google.protobuf.Int32Value);
+}

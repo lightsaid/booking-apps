@@ -1,6 +1,6 @@
 CREATE TABLE "tb_users" (
   "id" bigserial PRIMARY KEY,
-  "role_id" bigint NOT NULL,
+  "role_id" bigint NULL,
   "phone_number" varchar NOT NULL,
   "password" varchar,
   "name" varchar NOT NULL,

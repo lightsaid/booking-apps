@@ -23,7 +23,7 @@ INSERT INTO tb_users (
 `
 
 type CreateUserParams struct {
-	RoleID      int64   `json:"role_id"`
+	RoleID      *int64  `json:"role_id"`
 	PhoneNumber string  `json:"phone_number"`
 	Password    *string `json:"password"`
 	Name        string  `json:"name"`
@@ -238,7 +238,7 @@ RETURNING id, role_id, phone_number, password, name, avatar, openid, unionid, cr
 
 type UpdateUserRoleParams struct {
 	ID        int64     `json:"id"`
-	RoleID    int64     `json:"role_id"`
+	RoleID    *int64    `json:"role_id"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 

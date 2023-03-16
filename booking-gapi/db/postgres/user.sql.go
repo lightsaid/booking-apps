@@ -13,8 +13,9 @@ import (
 const CreateUser = `-- name: CreateUser :one
 INSERT INTO tb_users (
     phone_number,
-    name
-) VALUES($1, $2) RETURNING id, role_id, phone_number, password, name, avatar, openid, unionid, created_at, updated_at, deleted_at
+    name,
+    role_id
+) VALUES($1, $2, 2) RETURNING id, role_id, phone_number, password, name, avatar, openid, unionid, created_at, updated_at, deleted_at
 `
 
 type CreateUserParams struct {

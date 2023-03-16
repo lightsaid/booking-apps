@@ -116,7 +116,7 @@ type TbTicket struct {
 
 type TbUser struct {
 	ID          int64      `json:"id"`
-	RoleID      int64      `json:"role_id"`
+	RoleID      *int64     `json:"role_id"`
 	PhoneNumber string     `json:"phone_number"`
 	Password    *string    `json:"password"`
 	Name        string     `json:"name"`

@@ -18,6 +18,10 @@ type UserServer struct {
 	pb.UnimplementedUserServiceServer
 }
 
+func NewUserServer(store db.Store) *UserServer {
+	return &UserServer{store: store}
+}
+
 func (srv *UserServer) GetProfile(ctx context.Context, tmp *emptypb.Empty) (*pb.GetProfileResponse, error) {
 	// TODO： 从ctx获取id
 	var uid int64 = 1
@@ -65,8 +69,8 @@ func (srv *UserServer) UpdateProfile(ctx context.Context, req *pb.UpdateProfileR
 		status.Errorf(codes.Internal, "更新失败")
 	}
 	rsp := pb.UpdateProfileResponse{User: &pb.User{
-		Id:          user.RoleID,
-		RoleId:      user.RoleID,
+		Id:          user.ID,
+		RoleId:      *user.RoleID,
 		Name:        user.Name,
 		PhoneNumber: user.PhoneNumber,
 		Avatar:      *user.Avatar,

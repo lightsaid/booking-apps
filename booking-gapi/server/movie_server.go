@@ -15,20 +15,12 @@ import (
 
 type MovieServer struct {
 	store db.Store
-	pb.UnimplementedAuthServiceServer
+	pb.UnimplementedMovieServiceServer
 }
 
-func toPbMovie(item *db.TbMovie) *pb.Movie {
-	return &pb.Movie{
-		Id:          item.ID,
-		Title:       item.Title,
-		ReleaseDate: timestamppb.New(item.ReleaseDate),
-		Poster:      item.Poster,
-		Director:    item.Director,
-		Description: *item.Description,
-		Genre:       *item.Genre,
-		Star:        *item.Star,
-		Duration:    item.Duration,
+func NewMovieServer(store db.Store) *MovieServer {
+	return &MovieServer{
+		store: store,
 	}
 }
 
@@ -65,4 +57,18 @@ func (srv *MovieServer) GetMovie(ctx context.Context, req *pb.GetMovieRequest) (
 	}
 
 	return &pb.GetMovieResponse{Movie: toPbMovie(movie)}, nil
+}
+
+func toPbMovie(item *db.TbMovie) *pb.Movie {
+	return &pb.Movie{
+		Id:          item.ID,
+		Title:       item.Title,
+		ReleaseDate: timestamppb.New(item.ReleaseDate),
+		Poster:      item.Poster,
+		Director:    item.Director,
+		Description: *item.Description,
+		Genre:       *item.Genre,
+		Star:        *item.Star,
+		Duration:    item.Duration,
+	}
 }

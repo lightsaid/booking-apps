@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log"
 	"time"
 	"toolkit/jwtutil"
-	"toolkit/mocksms"
 	"toolkit/random"
 
 	"github.com/gofrs/uuid"
@@ -23,6 +23,15 @@ type AuthServer struct {
 	store db.Store
 	pb.UnimplementedAuthServiceServer
 	jwtMaker *jwtutil.Maker
+	smsStore SMSStore
+}
+
+func NewAuthServer(store db.Store, jwtMaker *jwtutil.Maker) *AuthServer {
+	return &AuthServer{
+		store:    store,
+		jwtMaker: jwtMaker,
+		smsStore: NewSMSStore(),
+	}
 }
 
 func createJWTPayload(uid int64, expires time.Time) (*jwtutil.JWTPayload, error) {
@@ -48,28 +57,43 @@ func (srv *AuthServer) Register(ctx context.Context, req *pb.RegisterRequest) (*
 		return nil, status.Errorf(codes.InvalidArgument, "参数不对: %s", v.String())
 	}
 
-	sms, ok := mocksms.GetMockSMS(req.PhoneNumber)
-	if !ok || sms != nil && sms.Code() != int64(req.Code) {
+	// sms, ok := mocksms.GetMockSMS(req.PhoneNumber)
+	// if !ok || sms != nil && sms.Code() != int64(req.Code) {
+	// 	return nil, status.Errorf(codes.InvalidArgument, "验证码不正确")
+	// }
+
+	if ok := srv.smsStore.Valid(req.PhoneNumber, req.Code); !ok {
 		return nil, status.Errorf(codes.InvalidArgument, "验证码不正确")
 	}
 
 	user, err := srv.store.GetUserByPhone(ctx, req.PhoneNumber)
-	if err != nil && err == sql.ErrNoRows {
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("Register GetUserByPhone failed1: ", err)
 		return nil, status.Error(codes.Internal, "查询用户失败")
 	}
-	if user != nil {
+	if user.ID > 0 {
+		log.Println("Register GetUserByPhone failed2: ", user.ID, user.RoleID, user.Avatar)
 		return nil, status.Error(codes.AlreadyExists, "用户已存在")
 	}
 
 	newUser, err := srv.store.CreateUser(ctx, db.CreateUserParams{PhoneNumber: req.PhoneNumber, Name: random.RandomString(5)})
 	if err != nil {
+		log.Println("Register CreateUser failed1: ", err)
 		return nil, status.Error(codes.Internal, "注册失败")
+	}
+	var avatar string
+	if user.Avatar != nil {
+		avatar = *user.Avatar
+	}
+	var roleId int64
+	if user.RoleID != nil {
+		roleId = *user.RoleID
 	}
 	rsp := pb.RegisterResponse{User: &pb.User{
 		Id:          newUser.ID,
 		Name:        newUser.Name,
-		RoleId:      newUser.RoleID,
-		Avatar:      *newUser.Avatar,
+		RoleId:      roleId,
+		Avatar:      avatar,
 		PhoneNumber: newUser.PhoneNumber,
 	}}
 	return &rsp, nil
@@ -84,8 +108,12 @@ func (srv *AuthServer) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Log
 		return nil, status.Errorf(codes.InvalidArgument, "参数不对: %s", v.String())
 	}
 
-	sms, ok := mocksms.GetMockSMS(req.PhoneNumber)
-	if !ok || sms != nil && sms.Code() != int64(req.Code) {
+	// sms, ok := mocksms.GetMockSMS(req.PhoneNumber)
+	// if !ok || sms != nil && sms.Code() != int64(req.Code) {
+	// 	return nil, status.Errorf(codes.InvalidArgument, "验证码不正确")
+	// }
+
+	if ok := srv.smsStore.Valid(req.PhoneNumber, req.Code); !ok {
 		return nil, status.Errorf(codes.InvalidArgument, "验证码不正确")
 	}
 
@@ -116,11 +144,18 @@ func (srv *AuthServer) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Log
 	if err != nil {
 		return nil, status.Error(codes.Internal, "生成Token失败")
 	}
-
+	var avatar string
+	if user.Avatar != nil {
+		avatar = *user.Avatar
+	}
+	var roleId int64
+	if user.RoleID != nil {
+		roleId = *user.RoleID
+	}
 	rsp := &pb.LoginResponse{
 		AccessToken:  access_token,
 		RefreshToken: refresh_token,
-		User:         &pb.User{Id: user.ID, Name: user.Name, Avatar: *user.Avatar, RoleId: user.RoleID, PhoneNumber: user.PhoneNumber},
+		User:         &pb.User{Id: user.ID, Name: user.Name, Avatar: avatar, RoleId: roleId, PhoneNumber: user.PhoneNumber},
 	}
 
 	return rsp, nil
