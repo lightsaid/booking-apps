@@ -5,7 +5,7 @@ INSERT INTO tb_halls("theater_id", "name", "total_seats") VALUES($1, $2, $3) RET
 SELECT * FROM tb_halls WHERE id=$1 AND deleted_at IS NULL LIMIT 1;
 
 -- name: ListHalls :many
-SELECT * FROM tb_halls WHERE deleted_at IS NULL LIMIT $1 OFFSET $2;
+SELECT * FROM tb_halls WHERE theater_id = $1 AND deleted_at IS NULL LIMIT $2 OFFSET $3;
 
 -- name: UpdateHall :one
 UPDATE tb_halls

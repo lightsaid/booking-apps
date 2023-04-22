@@ -74,16 +74,17 @@ func (q *Queries) GetHall(ctx context.Context, id int64) (*TbHall, error) {
 }
 
 const ListHalls = `-- name: ListHalls :many
-SELECT id, theater_id, name, total_seats, created_at, updated_at, deleted_at FROM tb_halls WHERE deleted_at IS NULL LIMIT $1 OFFSET $2
+SELECT id, theater_id, name, total_seats, created_at, updated_at, deleted_at FROM tb_halls WHERE theater_id = $1 AND deleted_at IS NULL LIMIT $2 OFFSET $3
 `
 
 type ListHallsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	TheaterID int64 `json:"theater_id"`
+	Limit     int32 `json:"limit"`
+	Offset    int32 `json:"offset"`
 }
 
 func (q *Queries) ListHalls(ctx context.Context, arg ListHallsParams) ([]*TbHall, error) {
-	rows, err := q.query(ctx, q.listHallsStmt, ListHalls, arg.Limit, arg.Offset)
+	rows, err := q.query(ctx, q.listHallsStmt, ListHalls, arg.TheaterID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

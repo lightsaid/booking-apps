@@ -15,7 +15,7 @@ RETURNING *;
 SELECT * FROM tb_movies WHERE id = $1 AND deleted_at IS NULL LIMIT 1;
 
 -- name: ListMovies :many
-SELECT * FROM tb_movies WHERE deleted_at IS NULL ORDER BY created_at LIMIT $1 OFFSET $2;
+SELECT count(*) over(), * FROM tb_movies WHERE deleted_at IS NULL ORDER BY created_at LIMIT $1 OFFSET $2;
 
 -- name: DeleteMovie :one
 UPDATE tb_movies SET deleted_at = now() WHERE id = $1 AND deleted_at IS NOT NULL RETURNING *;

@@ -113,7 +113,7 @@ func (q *Queries) GetMovie(ctx context.Context, id int64) (*TbMovie, error) {
 }
 
 const ListMovies = `-- name: ListMovies :many
-SELECT id, title, release_date, director, poster, duration, genre, star, description, created_at, updated_at, deleted_at FROM tb_movies WHERE deleted_at IS NULL ORDER BY created_at LIMIT $1 OFFSET $2
+SELECT count(*) over(), id, title, release_date, director, poster, duration, genre, star, description, created_at, updated_at, deleted_at FROM tb_movies WHERE deleted_at IS NULL ORDER BY created_at LIMIT $1 OFFSET $2
 `
 
 type ListMoviesParams struct {
@@ -121,16 +121,33 @@ type ListMoviesParams struct {
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) ListMovies(ctx context.Context, arg ListMoviesParams) ([]*TbMovie, error) {
+type ListMoviesRow struct {
+	Count       int64      `json:"count"`
+	ID          int64      `json:"id"`
+	Title       string     `json:"title"`
+	ReleaseDate time.Time  `json:"release_date"`
+	Director    string     `json:"director"`
+	Poster      string     `json:"poster"`
+	Duration    int32      `json:"duration"`
+	Genre       *string    `json:"genre"`
+	Star        *string    `json:"star"`
+	Description *string    `json:"description"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
+	DeletedAt   *time.Time `json:"deleted_at"`
+}
+
+func (q *Queries) ListMovies(ctx context.Context, arg ListMoviesParams) ([]*ListMoviesRow, error) {
 	rows, err := q.query(ctx, q.listMoviesStmt, ListMovies, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []*TbMovie{}
+	items := []*ListMoviesRow{}
 	for rows.Next() {
-		var i TbMovie
+		var i ListMoviesRow
 		if err := rows.Scan(
+			&i.Count,
 			&i.ID,
 			&i.Title,
 			&i.ReleaseDate,

@@ -32,6 +32,12 @@ func setupValidatorEngine() error {
 			if len(strings.TrimSpace(name)) == 0 {
 				name = fl.Tag.Get("json")
 			}
+			if len(strings.TrimSpace(name)) == 0 {
+				name = fl.Tag.Get("form")
+			}
+			if len(strings.TrimSpace(name)) == 0 {
+				name = fl.Tag.Get("uri")
+			}
 			name += " "
 			return name
 		})

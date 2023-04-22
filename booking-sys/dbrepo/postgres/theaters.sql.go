@@ -7,6 +7,7 @@ package dbrepo
 
 import (
 	"context"
+	"time"
 )
 
 const CreateTheater = `-- name: CreateTheater :one
@@ -70,7 +71,7 @@ func (q *Queries) GetTheater(ctx context.Context, id int64) (*TbTheater, error) 
 }
 
 const ListTheaters = `-- name: ListTheaters :many
-SELECT id, name, location, created_at, updated_at, deleted_at FROM tb_theaters WHERE deleted_at IS NULL LIMIT $1 OFFSET $2
+SELECT count(*) OVER(), id, name, location, created_at, updated_at, deleted_at FROM tb_theaters WHERE deleted_at IS NULL LIMIT $1 OFFSET $2
 `
 
 type ListTheatersParams struct {
@@ -78,16 +79,27 @@ type ListTheatersParams struct {
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) ListTheaters(ctx context.Context, arg ListTheatersParams) ([]*TbTheater, error) {
+type ListTheatersRow struct {
+	Count     int64      `json:"count"`
+	ID        int64      `json:"id"`
+	Name      string     `json:"name"`
+	Location  *string    `json:"location"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	DeletedAt *time.Time `json:"deleted_at"`
+}
+
+func (q *Queries) ListTheaters(ctx context.Context, arg ListTheatersParams) ([]*ListTheatersRow, error) {
 	rows, err := q.query(ctx, q.listTheatersStmt, ListTheaters, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []*TbTheater{}
+	items := []*ListTheatersRow{}
 	for rows.Next() {
-		var i TbTheater
+		var i ListTheatersRow
 		if err := rows.Scan(
+			&i.Count,
 			&i.ID,
 			&i.Name,
 			&i.Location,

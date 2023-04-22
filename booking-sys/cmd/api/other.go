@@ -38,6 +38,10 @@ type idUriRequest struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
 
+type idJSONRequest struct {
+	ID int64 `json:"id" binding:"required,min=1"`
+}
+
 func (s *Server) pingHandle(c *gin.Context) {
 	c.String(http.StatusOK, "Pong")
 }

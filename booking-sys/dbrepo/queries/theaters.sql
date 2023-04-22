@@ -5,7 +5,7 @@ INSERT INTO tb_theaters("name", "location") VALUES($1, $2) RETURNING *;
 SELECT * FROM tb_theaters WHERE id = $1 AND deleted_at IS NULL LIMIT 1;
 
 -- name: ListTheaters :many
-SELECT * FROM tb_theaters WHERE deleted_at IS NULL LIMIT $1 OFFSET $2;
+SELECT count(*) OVER(), * FROM tb_theaters WHERE deleted_at IS NULL LIMIT $1 OFFSET $2;
 
 -- name: UpdateTheater :one
 UPDATE tb_theaters 

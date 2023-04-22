@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"toolkit/dberr"
 
 	"github.com/gin-gonic/gin"
@@ -33,12 +34,25 @@ func (s *Server) createHall(c *gin.Context) {
 	app.ToResponse(c, t)
 }
 
+type listHallsRequest struct {
+	ID int64 `form:"id" binding:"required,min=1"`
+	pagingRequrest
+}
+
 func (s *Server) listHalls(c *gin.Context) {
-	var req pagingRequrest
+	var req listHallsRequest
+
 	if ok := app.BindRequest(c, &req); !ok {
 		return
 	}
-	list, err := s.store.ListHalls(c, dbrepo.ListHallsParams{Limit: req.PageSize, Offset: req.GetPageNum()})
+
+	log.Println(req.ID, req.PageNum, req.PageSize)
+
+	list, err := s.store.ListHalls(c, dbrepo.ListHallsParams{
+		Limit:     req.PageSize,
+		Offset:    req.PageNum,
+		TheaterID: req.ID,
+	})
 	if err != nil {
 		e, _ := dberr.HandleDBError(err)
 		app.ToErrorResponse(c, e)
