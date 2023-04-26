@@ -153,6 +153,9 @@ const submitForm = (formEl: FormInstance | undefined) => {
     formEl.validate((valid) => {
         if (valid) {
             localStorage.setItem("login_phone_number", loginForm.phone_number);
+            if (loginForm.login_type === "PASS"){
+                Reflect.deleteProperty(loginForm, "code")
+            }
             Login(loginForm).then(res=>{
                 store.setProfile(res.data)
                 router.replace({path:"/"})

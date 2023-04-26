@@ -98,11 +98,22 @@ export const routes: RouteRecordRaw[] = [
             {
                 path: "/theater/index",
                 name: "theaterIndex",
-                component: import("@/views/Todo.vue"),
+                component: import("@/views/Theater.vue"),
                 meta: {
                     authRequired: true,
                     title: "影院列表"
                 },
+               children: [
+                    {
+                        path: "/theater/hell/:id",
+                        name: "theaterHall",
+                        component: import("@/views/Hall.vue"),
+                        meta: {
+                            authRequired: true,
+                            title: "影院大厅"
+                        },
+                    }
+               ]
             },
             {
                 path: "/theater/seat",

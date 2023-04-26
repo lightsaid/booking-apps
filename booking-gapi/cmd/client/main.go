@@ -46,8 +46,8 @@ func main() {
 	getProfile(userClient)
 
 	// =========
-	// movieClient := pb.NewMovieServiceClient(conn)
-	// listMovie(movieClient)
+	movieClient := pb.NewMovieServiceClient(conn)
+	listMovie(movieClient)
 	// getMovie(movieClient)
 
 }

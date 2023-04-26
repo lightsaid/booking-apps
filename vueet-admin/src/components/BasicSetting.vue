@@ -17,7 +17,7 @@
                     :headers='{"Authorization": `Bearer ${token}`}'
                     :on-error="handleOnerror"
                     :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
-                    <img v-if="ruleForm.avatar" :src="fileurl + ruleForm.avatar" class="avatar" />
+                    <img v-if="ruleForm.avatar" :src="ruleForm.avatar" class="avatar" />
                     <el-icon v-else class="avatar-uploader-icon">
                         <Plus />
                     </el-icon>
@@ -43,7 +43,7 @@ import storage from "@/utils/storage"
 const AdminCode = "ADMIN"
 
 const uploadurl = import.meta.env.VITE_UPLOAD_URL
-const fileurl = import.meta.env.VITE_FILE_URL
+const imgBaseURL = import.meta.env.VITE_FILE_URL
 
 const token = storage.get(ProfileKey)?.access_token
 console.log(token)
@@ -62,10 +62,11 @@ const imageUrl = ref('')
 
 onMounted(()=>{
     GetProfile().then(res=>{
+        res.data.avatar = imgBaseURL + res.data.avatar
         ruleForm.id = res.data.id
         ruleForm.name = res.data.name
         ruleForm.phone_number = res.data.phone_number
-        ruleForm.avatar = res.data.avatar || ""
+        ruleForm.avatar =  res.data.avatar || ""
         imageUrl.value = res.data.avatar || ""
         // 查询是否是管理员
         GetRoleById(res.data.role_id).then(res=>{

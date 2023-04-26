@@ -41,5 +41,32 @@ declare namespace ApiRsp {
         code: string,
         description: string
     }
+
+    type TheaterResult = {
+        id: number,
+        name: string,
+        location: string,
+        created_at: string,
+        updated_at: string,
+        count: number,
+    }
+
+    type HallResult = {
+        id: number,
+        name: string,
+        theater_id: number,
+        total_seats: number
+    }
 }
 
+
+declare namespace App {
+    type Pagination = {
+        page_size: number,
+        page_num: number
+    }
+
+    type IDBody = {
+        id: number
+    }
+}

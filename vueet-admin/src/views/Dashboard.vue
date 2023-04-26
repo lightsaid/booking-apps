@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div v-for="i in 1">
-            <p> {{i}} Dashboard Page </p>
+        <div>
+            <p>  Dashboard Page </p>
         </div>
     </div>
 </template>
